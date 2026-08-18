@@ -60,6 +60,9 @@ cargo test -p plugctx --test acceptance_story_10_1
 echo "==> post-0.1.1 cargo-hack exclusive features (Story 1.2 / FR3)"
 cargo test -p plugctx --test acceptance_story_10_2
 
+echo "==> post-0.1.1 README immutability / yank (Story 1.3 / FR6)"
+cargo test -p plugctx --test acceptance_story_10_3
+
 echo "==> FR54 0.y version / CHANGELOG alignment (Story 9.4)"
 cargo test -p plugctx --test acceptance_story_9_4
 

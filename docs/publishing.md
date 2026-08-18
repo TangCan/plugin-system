@@ -138,7 +138,17 @@ crates.io Trusted Publishing 正文：<https://crates.io/docs/trusted-publishing
 ### 速率限制与永久发布（NFR13）
 
 - crates.io 对**新 crate / 新版本**有速率限制；密集试发易 429，应退避而非硬刷。
-- 发布**永久**：`yank` ≠ 删除；yank 只阻止新依赖解析，已下载副本仍在。密钥泄露靠**轮换 token**，不要指望 yank「收回」包。
+- 发布**永久**：`yank` ≠ 删除；yank 只阻止新依赖解析，已有 lockfile / 已下载副本仍在。密钥泄露靠**轮换 token**，不要指望 yank「收回」包。
+
+### crates.io README 不可变与 docs.rs 重建（FR6）
+
+crates.io 该版本页上的 README 来自该版本 `.crate` 里打包的 `readme` 文件，**绑死在该版本**。已 `cargo publish` 之后，改 Git 里的 README **不会**改掉已上架的那一版展示文案；要更新必须 **bump 版本再 publish**。
+
+举例（0.y.z，**不要**为此写成 `0.2.0`）：当前工作区是 `0.1.1`，若只为让新 README 出现在 crates.io，发 **0.1.2**；`plugctx` 与 `plugctx-derive` **锁步**同一版本。本仓库此故事**不**执行实际上架。
+
+`yank` 仍然 ≠ 删除（见上节）：只阻止**新**依赖解析选中该版本；已有 lockfile 与已下载副本仍在。密钥泄露靠**轮换 token**，不以 yank 代替。
+
+crates.io 版本列表可以触发 **docs.rs 重建**：只刷新该版本的 **rustdoc** HTML，**不**替换该版本 `.crate` 内的 README。想换 README 仍须升版本。
 
 ### release-plz（或等价）操作说明
 

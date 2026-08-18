@@ -2,7 +2,7 @@
 
 Rust 插件系统工作区：既有 **C ABI `cdylib` 脚手架**（`plugin-api` / `plugin-host`），以及演进中的进程内插件框架核心库 **`plugctx`**。二者**并存演进**——`plugctx` 不立即替换 ABI 脚手架；动态加载能力按 feature 渐进接入同一 `Context` 生命周期。
 
-> crates.io：**0.1.1 已上架** — [`plugctx`](https://crates.io/crates/plugctx) / [`plugctx-derive`](https://crates.io/crates/plugctx-derive)。曾用名 `pluggable` 已被无关方占用，勿与 crates.io 上其他 `pluggable` 混淆。
+> crates.io：**0.1.1 已上架** — [`plugctx`](https://crates.io/crates/plugctx) / [`plugctx-derive`](https://crates.io/crates/plugctx-derive)。曾用名 `pluggable` 已被无关方占用，勿与 crates.io 上其他 `pluggable` 混淆。已发布版本的 README 绑在该版本 `.crate` 上，改文案须 bump（例如 0.1.1 → 0.1.2）再 publish；详见 [`docs/publishing.md`](docs/publishing.md)。
 
 ```bash
 cargo add plugctx
