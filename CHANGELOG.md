@@ -4,7 +4,11 @@
 
 ## Unreleased
 
-无。下一 crates.io 版本须先 bump `workspace.package.version`，再在此记录变更。
+无。
+
+## crates.io 0.1.1 — 2026-08-18
+
+锁步：`plugctx` / `plugctx-derive` **0.1.1**。`authors` 从占位 `release_check` 改为 `Tang Can <tang_can@qq.com>`。**不**改写已上架的 0.1.0 包（yank ≠ 删除）。
 
 ## crates.io 0.1.0 — 2026-08-18
 
@@ -21,7 +25,7 @@ Cargo `version` 为 `0.1.0`，同时已交付下文 **[0.1.0] 核心** 与 **[0.
 | 概念 | 含义 |
 |------|------|
 | **能力清单** | 下文 `[0.1.0]` / `[0.2.0]` 标题：路线图可验收的功能集合 |
-| **crates.io / Cargo `version`** | `workspace.package.version`；crates.io 当前为 **`0.1.0`**（2026-08-18 上架） |
+| **crates.io / Cargo `version`** | `workspace.package.version`；crates.io 当前为 **`0.1.1`**（2026-08-18 上架；0.1.0 仍保留） |
 
 **规则：**
 

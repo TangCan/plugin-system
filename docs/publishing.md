@@ -1,6 +1,6 @@
 # crates.io 发布元数据与边界（FR51）
 
-**现状（2026-08-18）：** [`plugctx`](https://crates.io/crates/plugctx) 与 [`plugctx-derive`](https://crates.io/crates/plugctx-derive) **0.1.0 已上架**。本文档列出必填（或推荐）元数据、工作区内 **不可发布** 成员，以及**后续版本**的发版顺序。
+**现状（2026-08-18）：** [`plugctx`](https://crates.io/crates/plugctx) 与 [`plugctx-derive`](https://crates.io/crates/plugctx-derive) **0.1.1 已上架**（0.1.0 仍保留）。本文档列出必填（或推荐）元数据、工作区内 **不可发布** 成员，以及**后续版本**的发版顺序。
 
 ## 公开 crate 必填 / 等价项
 
@@ -143,7 +143,7 @@ CI / 脏工作树使用 `--allow-dirty`；**真正 upload 前**须在干净树�
 | 加性能力 | 新 Cargo feature / 文档能力可留在**同一** `0.y` |
 | Breaking | 破坏性（breaking）变更才 bump `0.y`（或按 `0.y.z` 惯例） |
 | CHANGELOG `[0.2.0]` | **能力清单**标题，**不等于**强制把 `workspace.package.version` 写成 `0.2.0` |
-| 当前工作区 | `version = "0.1.0"` 可同时承载 0.2 清单已交付的扩展（见 [`CHANGELOG.md`](../CHANGELOG.md)） |
+| 当前工作区 | `version = "0.1.1"` 可同时承载 0.2 清单已交付的扩展（见 [`CHANGELOG.md`](../CHANGELOG.md)） |
 
 ### `plugctx` ↔ `plugctx-derive` 版本耦合
 
@@ -156,7 +156,7 @@ CI / 脏工作树使用 `--allow-dirty`；**真正 upload 前**须在干净树�
 | 名称 | 状态（决策依据） |
 |------|------------------|
 | `pluggable` | crates.io **已占用**（无关方 `0.1.0` async plugin system）——**不可**作为本库上架名 |
-| `plugctx` / `plugctx-derive` | **已采用并上架 0.1.0**（2026-08-18）。更早 2026-08-17 API 探测为 404（研究卷宗 `technical-pluggable-crate-rename-2026-08-17`）；该空闲探测已过期。 |
+| `plugctx` / `plugctx-derive` | **已采用并上架**；当前最新 **0.1.1**（2026-08-18）。0.1.0 仍保留。更早 2026-08-17 API 探测为 404（研究卷宗 `technical-pluggable-crate-rename-2026-08-17`）；该空闲探测已过期。 |
 
 **后续发版：**
 

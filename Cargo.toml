@@ -19,17 +19,17 @@ default-members = [
 ]
 
 [workspace.package]
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "MIT OR Apache-2.0"
-authors = ["release_check"]
+authors = ["Tang Can <tang_can@qq.com>"]
 readme = "README.md"
 repository = "https://github.com/TangCan/plugin-system"
 
 [workspace.dependencies]
 # path + version：crates.io 发布规则（FR51）；plugin-api 本身 publish = false。
-plugin-api = { path = "crates/plugin-api", version = "0.1.0" }
-plugctx = { path = "crates/plugctx", version = "0.1.0" }
+plugin-api = { path = "crates/plugin-api", version = "0.1.1" }
+plugctx = { path = "crates/plugctx", version = "0.1.1" }
 libloading = "0.8"
 slotmap = "1"
 thiserror = "2"
