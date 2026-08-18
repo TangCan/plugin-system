@@ -173,6 +173,43 @@ fn context_dispose_physically_unloads_library() {
     assert_eq!(again.name(), "hello");
 }
 
+/// Story 1.3：用户可见文档不得再写 native「逻辑卸载 ≠ dlclose」。
+#[test]
+fn user_docs_state_native_physical_unload() {
+    let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .and_then(|p| p.parent())
+        .expect("workspace root")
+        .to_path_buf();
+    let files = [
+        "README.md",
+        "docs/feature-matrix.md",
+        "docs/testing.md",
+        "CHANGELOG.md",
+        "docs/requirements/4. 扩展模块设计.md",
+    ];
+    for rel in files {
+        let text = std::fs::read_to_string(root.join(rel)).unwrap_or_else(|e| panic!("{rel}: {e}"));
+        assert!(
+            !text.contains("逻辑卸载 ≠ `dlclose`") && !text.contains("逻辑卸载 ≠ dlclose"),
+            "{rel} still claims native logical-unload ≠ dlclose"
+        );
+        assert!(
+            text.contains("dlclose") || rel == "docs/testing.md",
+            "{rel} should mention dlclose for native unload (testing.md may only say 物理卸载)"
+        );
+    }
+    let readme = std::fs::read_to_string(root.join("README.md")).unwrap();
+    assert!(
+        readme.contains("load → use → dispose → load") || readme.contains("load → dispose → load")
+    );
+    let wasm_readme = readme.contains("close") || readme.contains("FR26");
+    assert!(
+        wasm_readme,
+        "README must keep WASM instance close semantics"
+    );
+}
+
 /// Story 1.2 AC#1: dispose hello 后加载另一路径 echo，新行为可用，旧 invoker 不可用。
 #[test]
 fn reload_different_path_hello_then_echo() {

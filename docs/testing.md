@@ -143,7 +143,7 @@ cargo bench -p plugctx --bench core_paths -- --baseline main
 | `async` | `acceptance_story_3_1` | `cargo test -p plugctx --features async --test acceptance_story_3_1` |
 | `parallel` | `acceptance_story_3_2` | `cargo test -p plugctx --features parallel --test acceptance_story_3_2` |
 | `thread-safe` | `acceptance_story_4_1` | `cargo test -p plugctx --features thread-safe --test acceptance_story_4_1` |
-| `dynamic-native` | `acceptance_story_4_2` | 先 `cargo build -p hello_plugin -p echo_plugin`，再 `--features dynamic-native --test acceptance_story_4_2` |
+| `dynamic-native` | `acceptance_story_4_2` | 先 `cargo build -p hello_plugin -p echo_plugin`，再 `--features dynamic-native --test acceptance_story_4_2`。native dispose 为物理卸载（`dlclose`），覆盖热插拔 load→dispose→load。 |
 | `dynamic-wasm` | `acceptance_story_4_3` | `--features dynamic-wasm --test acceptance_story_4_3` |
 | `dynamic-wasm`（InstancePool） | `acceptance_story_7_1` | `--features dynamic-wasm --test acceptance_story_7_1` |
 | `dynamic-wasm`（Pool 归还/destroy） | `acceptance_story_7_2` | `--features dynamic-wasm --test acceptance_story_7_2` |

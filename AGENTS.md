@@ -8,7 +8,7 @@ Rust workspace: in-process plugin framework `plugctx` plus optional C ABI / WASM
 ## Where things are
 
 - Coding behavior (Karpathy): `.cursor/rules/karpathy-guidelines.mdc`
-- Native hot-plug / physical unload: `_agile-output/planning-artifacts/architecture.md` (AD-1–AD-3); do not treat README or `docs/requirements` FR25 as current
+- Native hot-plug / physical unload: `_agile-output/planning-artifacts/architecture.md` (AD-1–AD-3)
 - Public API freeze: `docs/api-freeze.md`
 - Feature flags and CI matrix: `docs/feature-matrix.md`, `docs/testing.md`
 - Publish surface: `docs/publishing.md` — only `plugctx` and `plugctx-derive` are publishable
@@ -21,14 +21,10 @@ Rust workspace: in-process plugin framework `plugctx` plus optional C ABI / WASM
 
 ## Conventions that differ from defaults
 
-- Native `dynamic-native` unload must Drop `libloading::Library` after logical unregister (architecture AD-1). Do not keep `ManuallyDrop<Library>` or re-assert 「逻辑卸载 ≠ dlclose」. WASM unload stays instance `close`/`free` (FR26).
+- Native `dynamic-native` unload must Drop `libloading::Library` after logical unregister (architecture AD-1). WASM unload stays instance `close`/`free` (FR26).
 - Do not add `reload()`; hot-plug is load → use → dispose → load. New public Error variants or core signatures must update `docs/api-freeze.md`.
 - Keep `plugctx` `default = []`; do not pull `extism` / `wasmtime` / `libloading` into the default graph. Example apps stay `publish = false` and must not add those runtimes to `plugctx` defaults.
 - Core `Error` variants are unit-like; `get` / `get_trait` return `Option`, not `Error::ServiceNotFound`.
 - User-facing docs in 中文; code identifiers in English.
-
-## Known pitfalls
-
-- README, `docs/feature-matrix.md`, and `docs/requirements` still document FR25 until story 1.3; follow `architecture.md` for native unload.
 
 <!-- /bmad:context -->

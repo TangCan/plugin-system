@@ -13,7 +13,7 @@
 | `async` | 关 | `async-trait`、`futures` | `AsyncPlugin` + `start_async`（不绑运行时） | `acceptance_story_3_1` |
 | `parallel` | 关 | 隐含 `async`（复用 `futures`） | 宿主侧 `emit_parallel` fan-out | `acceptance_story_3_2` |
 | `thread-safe` | 关 | `parking_lot` | `Arc`+`RwLock`/`Mutex`；`Send+Sync` Context | `acceptance_story_4_1` |
-| `dynamic-native` | 关 | `libloading`、`plugin-api` | C ABI 动态库；逻辑卸载 ≠ dlclose；`PLUGIN_ABI_VERSION` | `acceptance_story_4_2`（+ `4_4`/`4_5`） |
+| `dynamic-native` | 关 | `libloading`、`plugin-api` | C ABI 动态库；dispose 后 Drop `Library`（`dlclose`）；热插拔 = load → dispose → load；`PLUGIN_ABI_VERSION` | `acceptance_story_4_2`（+ `4_4`/`4_5`） |
 | `dynamic-wasm` | 关 | `extism`（可选） | Extism WASM 适配器；单实例显式 close/free；**逻辑** `WasmInstancePool`（有界 checkout / 归还 reset / destroy）；`WASM_ABI_VERSION` | `acceptance_story_4_3`；池：`7_1` / `7_2`；概念门禁：`7_3` |
 | `dynamic-wasm-component` | 关 | `wasmtime`（可选，**47.x**） | `wasmtime::component`；`ComponentPlugin`/`ComponentLoader`/`PluginBackend`；与 Extism **分路径、分制品**（FR48）；**一 Store 一实例**，销毁=Drop Store（FR49）；**WIT + wasip2 样例客人**（FR50，`wit_sample_add.wasm`） | `acceptance_story_8_1`；双后端：`8_2`（需 `dynamic-wasm`）；Store Drop：`8_3`；WIT 样例：`8_4`；版本钉死见 [`component-model-versions.md`](component-model-versions.md) |
 | `tracing` | 关 | `tracing` 门面 | build/emit/dispose 诊断 span；无强制 subscriber | `acceptance_story_5_4` |
@@ -41,7 +41,7 @@
 | --- | --- |
 | `async` | 已交付 |
 | `parallel`（依赖 async） | 已交付 |
-| `dynamic-native`（`libloading` + 稳定 C ABI） | 已交付；逻辑卸载默认不 `dlclose` |
+| `dynamic-native`（`libloading` + 稳定 C ABI） | 已交付；dispose 后物理卸载（`dlclose`） |
 | `thread-safe`（`Arc` + `parking_lot::RwLock`） | 已交付 |
 | `plugctx-derive` 独立 crate | 已交付；核心不依赖宏 crate |
 | 不以 `abi_stable` 为基线 | 已遵守（NFR6） |

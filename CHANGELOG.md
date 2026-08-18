@@ -4,6 +4,7 @@
 
 ## Unreleased
 
+- **breaking（仅 `dynamic-native`）**：native 插件 `PluginHandle::dispose` / Context dispose 后 Drop `libloading::Library`（`dlclose` / `FreeLibrary`）。热插拔 = load → dispose → load；**不**新增 `reload()`。默认同步内核与 WASM FR26（实例 `close`/`free`）不变；**不**因此把 workspace `version` 改成 `0.2.0`。
 - **包名**：`pluggable` / `pluggable-derive` → **`plugctx` / `plugctx-derive`**（crates.io 上 `pluggable` 已被无关方占用；见 `docs/publishing.md`）。
 - **示例**：扩展 `crates/plugctx/examples`（`async-start` / `stages-lifecycle`）；新增工作区包 `examples/`（`plugctx-examples`，`publish = false`：derive / wasm / component）。
 
@@ -92,5 +93,5 @@ cd plugin-system
 ### 相对 0.1.0 的说明
 
 - 扩展 API 经 feature 隔离，不破坏默认同步 `Context` / `Plugin` 契约。
-- 动态加载：**逻辑卸载 ≠ `dlclose`**（native）；WASM 实例须显式 `close`/`free`。
+- 动态加载：native dispose 后 **物理卸载（Drop `Library` / `dlclose`）**；WASM 实例须显式 `close`/`free`（FR26）。默认同步内核契约不变。
 - 完整 Feature 表与设计偏离：[`docs/feature-matrix.md`](docs/feature-matrix.md)。

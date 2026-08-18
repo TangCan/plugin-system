@@ -46,7 +46,7 @@ plugin-system/
 | `async` | `AsyncPlugin` + `start_async` | `async-trait` / `futures` | 不绑定具体运行时 |
 | `parallel` | `emit_parallel` 宿主侧 fan-out | 隐含 `async` | 不假定 guest 多线程 |
 | `thread-safe` | `Send+Sync` Context 存储 | `parking_lot` | 持 `ServiceRef` 时勿重入写路径 |
-| `dynamic-native` | C ABI + `libloading` | `libloading`（包内 `c_abi`） | **逻辑卸载 ≠ `dlclose`**；脚手架 `plugin-api` 同源且 `publish = false` |
+| `dynamic-native` | C ABI + `libloading` | `libloading`（包内 `c_abi`） | dispose 后 **Drop `Library`（`dlclose`）**；热插拔 = load → dispose → load；脚手架 `plugin-api` 同源且 `publish = false` |
 | `dynamic-wasm` | WASM 适配器（Extism） | 可选 `extism` | 实例显式 `close`/`free` |
 | `dynamic-wasm-component` | `wasmtime::component` 嵌入 | 可选 `wasmtime` **47.x** | 与 Extism 经 `PluginBackend` 分路径 / **分制品**（FR48）；见 [`docs/component-model-versions.md`](docs/component-model-versions.md) |
 | `tracing` | build / emit / dispose 诊断 span | 仅 `tracing` 门面 | **非默认**；不引入 `tracing-subscriber`（应用侧自选后端） |
@@ -76,7 +76,7 @@ tracing_subscriber::fmt().with_max_level(tracing::Level::DEBUG).init();
 | Feature | 路径 | 卸载语义 | ABI 协商 |
 | --- | --- | --- | --- |
 | （默认） | 进程内 `Plugin` | `PluginHandle::dispose` / Context dispose | 无跨边界 ABI |
-| `dynamic-native` | C ABI + `libloading` | **逻辑卸载**（撤销注册与 Effect）；**≠ `dlclose`** | `PLUGIN_ABI_VERSION`（vtable） |
+| `dynamic-native` | C ABI + `libloading` | 先撤销注册与 Effect，再 **Drop `Library`（`dlclose`）** | `PLUGIN_ABI_VERSION`（vtable） |
 | `dynamic-wasm` | WASM 适配器（Extism） | **实例显式 `close`/`free`**（FR26） | `WASM_ABI_VERSION`（custom section / `abi_override`） |
 | `dynamic-wasm-component` | `wasmtime::component` | 销毁=Drop Store（FR49，`store_drop_count`）；dispose Effect 触发 | 最小组件导出；WIT wasip2 样例（FR50）；版本矩阵 NFR12 |
 
@@ -191,7 +191,7 @@ cargo run -p plugctx-examples --example derive-plugin
 # 可选过程宏（独立 crate；核心不依赖）
 cargo test -p plugctx-derive
 
-# 原生动态加载（feature dynamic-native；逻辑卸载 ≠ dlclose）
+# 原生动态加载（feature dynamic-native；dispose 后物理卸载 / dlclose）
 cargo build -p hello_plugin -p echo_plugin
 cargo test -p plugctx --features dynamic-native --test acceptance_story_4_2
 
@@ -236,7 +236,7 @@ cargo run -p plugin-host -- target/debug call hello greet rust
 cargo run -p plugin-host -- target/debug call echo echo ping
 ```
 
-`plugctx` 启用 `dynamic-native` 后可用 `load_native_plugin` 将 C ABI 插件安装进同一 `Context`；卸载为撤销注册与 Effect，默认不依赖 `dlclose`。
+`plugctx` 启用 `dynamic-native` 后可用 `load_native_plugin` 将 C ABI 插件安装进同一 `Context`。卸载先撤销注册与 Effect，再 Drop `libloading::Library`（`dlclose` / `FreeLibrary`）。热插拔：load → use → dispose → load（不提供 `reload()`）。Windows 上若映射期间文件被锁，须先 dispose 或换路径再写制品。
 
 启用 `dynamic-wasm` 后可用 `load_wasm_plugin` 加载 **Extism** WASM 实例（制品须为合法 `\0asm`，验收用 `bundled_echo_wasm` / `testdata/echo.wasm`）。dispose / `close` 显式释放 Extism 插件实例（FR26）。亦提供 `WasmInstancePool`：可配置 `max_instances`、带超时 `checkout`（FR43）；Guard **Drop 归还**（`reset` + 工厂重建，防跨借出串态，FR44），[`WasmCheckoutGuard::destroy`] **销毁不归还**（FR45）。`extism` 仅经本 feature 进入依赖图，不进默认构建。
 
