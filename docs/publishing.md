@@ -107,8 +107,25 @@ CI / 脏工作树使用 `--allow-dirty`；**真正 upload 前**须在干净树�
 
 | 方式 | 用途 | 注意 |
 |------|------|------|
-| `CARGO_REGISTRY_TOKEN` | `cargo publish` / release-plz | 最小权限；泄漏后**轮换 token**，**不以 yank 代替轮换**（NFR13） |
-| Trusted publishing（crates.io ↔ GitHub OIDC） | 自动化发版 | 配置见 crates.io 文档；适合已存在的 crate |
+| `CARGO_REGISTRY_TOKEN` | 本机 `cargo publish`、新 crate **首次**占名 | 最小权限；泄漏后**轮换 token**，**不以 yank 代替轮换**（NFR13） |
+| Trusted Publishing（crates.io ↔ GitHub OIDC） | **后续版本**的默认 CI 发版 | 短时 token 约 **30** 分钟；不把长期 registry token 存进 GitHub secrets |
+
+迁移期两种方式可**并存**（本机 token 与 CI OIDC 不互斥）。后续发版以 Trusted Publishing 为默认路径，不以仓库 secret `CARGO_REGISTRY_TOKEN` 为默认。
+
+### Trusted Publishing 可执行步骤（后续发版）
+
+公开 crate 首次占名已完成。后续版本用 tag 触发 [`.github/workflows/release.yml`](../.github/workflows/release.yml)（OIDC，`id-token: write`）。
+
+1. crates.io 打开 [`plugctx`](https://crates.io/crates/plugctx) 与 [`plugctx-derive`](https://crates.io/crates/plugctx-derive) → Settings → **Trusted Publisher**（Trusted Publishing）→ Add GitHub：
+   - Repository owner / name：`TangCan` / `plugin-system`
+   - Workflow filename：**`release.yml`**（必须与仓库文件名精确一致）
+   - 两个 crate **都要**配（OIDC 只给已配置的 crate 发 token）
+2. 发版前：`./scripts/ci-publish-dry-run.sh` 绿；干净工作树再 dry-run 一次（无 `--allow-dirty`）。
+3. bump `workspace.package.version`（两 crate 锁步），打 tag：`git tag v0.1.2 && git push origin v0.1.2`（版本号按 0.y.z，不必写成 `0.2.0`）。
+4. `release.yml` 用 `rust-lang/crates-io-auth-action` 换约 30 分钟 token，**先** `cargo publish -p plugctx` **再** `cargo publish -p plugctx-derive`。
+5. 不在该工作流里使用 `secrets.CARGO_REGISTRY_TOKEN`。
+
+crates.io Trusted Publishing 正文：<https://crates.io/docs/trusted-publishing>
 
 ### 新 crate 名：首次须手工发布
 
@@ -129,8 +146,8 @@ CI / 脏工作树使用 `--allow-dirty`；**真正 upload 前**须在干净树�
 
 1. **本地/CI**：`./scripts/ci-publish-dry-run.sh` 绿。
 2. **首次每个新名**：维护者本机 `cargo login` 后手工 `cargo publish -p <crate>`（`plugctx` / `plugctx-derive` 已做过；见上节）。
-3. **后续版本**：配置 `CARGO_REGISTRY_TOKEN` 或 trusted publishing；用 release-plz `release-pr` → 合并 → `release`（示例注释见 `.github/workflows/ci.yml`）。
-4. **文档**：发版 PR 同步 `CHANGELOG.md` 与工作区 `version`（能力清单 vs SemVer 见下文 FR54）。
+3. **后续版本（默认）：** 按上文「Trusted Publishing 可执行步骤」推 `v*` tag；`release.yml` 走 OIDC。本机仍可用 API token（并存），但 CI 发版不以长期 `CARGO_REGISTRY_TOKEN` 为默认。
+4. **文档：** 发版 PR 同步 `CHANGELOG.md` 与工作区 `version`（能力清单 vs SemVer 见下文 FR54）。
 
 验收：`cargo test -p plugctx --test acceptance_story_9_3`。
 

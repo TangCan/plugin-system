@@ -67,6 +67,9 @@ cargo test -p plugctx --test acceptance_story_9_2
 cargo test -p plugctx --test acceptance_story_9_3
 ./scripts/ci-publish-dry-run.sh
 
+# Trusted Publishing 工作流（Story 1.1 / FR1）
+cargo test -p plugctx --test acceptance_story_10_1
+
 # 0.y 版本策略与 CHANGELOG 对齐（Story 9.4 / FR54）
 cargo test -p plugctx --test acceptance_story_9_4
 # 或直接：

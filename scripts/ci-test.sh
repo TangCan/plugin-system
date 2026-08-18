@@ -51,6 +51,9 @@ cargo test -p plugctx --test acceptance_story_9_2
 echo "==> FR53 publish dry-run CI gate (Story 9.3)"
 cargo test -p plugctx --test acceptance_story_9_3
 
+echo "==> post-0.1.1 Trusted Publishing workflow (Story 1.1 / FR1)"
+cargo test -p plugctx --test acceptance_story_10_1
+
 echo "==> FR54 0.y version / CHANGELOG alignment (Story 9.4)"
 cargo test -p plugctx --test acceptance_story_9_4
 
