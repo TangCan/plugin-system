@@ -45,8 +45,20 @@ fn main() {
 | 路径 | Feature | 卸载 |
 | --- | --- | --- |
 | 进程内 `Plugin` | 默认 | `PluginHandle::dispose` 撤销注册 |
-| native cdylib | `dynamic-native` | 先撤销注册，再 Drop `Library`（`dlclose`）。热插拔 = **load → use → dispose → load**，无 `reload()`。Windows 若文件仍被锁，先 dispose 或换路径。 |
+| native cdylib | `dynamic-native` | 先撤销注册，再 Drop `Library`（`dlclose` / `FreeLibrary`）。热插拔 = **load → use → dispose → load**，无 `reload()`。 |
 | WASM | `dynamic-wasm` | 实例显式 `close`/`free`（FR26），不是 `dlclose` |
+| WASM Component | `dynamic-wasm-component` | Drop Store（FR49），同样不是 native `dlclose` |
+
+### Native 卸载限度（FR4）
+
+`dispose` 成功、甚至 `dlclose` / `FreeLibrary` 返回成功，**不等于**一定能覆盖插件文件或映射已从进程消失：
+
+1. **文件锁：** `FreeLibrary` / `dlclose` 成功 ≠ 文件一定可覆盖。Windows 上其它 `LoadLibrary`、PIN、依赖模块仍可能锁住 `.dll`；须先 dispose 或换路径再写文件。
+2. **macOS TLS：** 带非平凡 TLS 析构的 dylib 在 macOS 上可能被标成**永不卸载**；`dlclose` 成功也不表示 unmap。
+3. **sound 卸载：** 须无残留引用、出站函数指针、库内线程。否则即使 OS 报告卸载成功，再 load 也不安全。
+
+不要把 `hot-lib-reloader` 一类文件监视工具当成生产公开 API。
+
 
 ## 场景示例命令
 

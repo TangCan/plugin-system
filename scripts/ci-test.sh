@@ -66,6 +66,9 @@ cargo test -p plugctx --test acceptance_story_10_3
 echo "==> post-0.1.1 docs.rs metadata (Story 1.4 / FR7)"
 cargo test -p plugctx --test acceptance_story_10_4
 
+echo "==> post-0.1.1 native unload limits (Story 2.1 / FR4)"
+cargo test -p plugctx --test acceptance_story_11_1
+
 echo "==> FR54 0.y version / CHANGELOG alignment (Story 9.4)"
 cargo test -p plugctx --test acceptance_story_9_4
 
