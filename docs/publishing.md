@@ -73,6 +73,8 @@ features = ["async", "parallel", "thread-safe", "tracing", "stages"]
 targets = ["x86_64-unknown-linux-gnu"]
 ```
 
+两公开 crate **均不得** `all-features = true`。`plugctx-derive` 无可选 features，只声明 `[package.metadata.docs.rs]`（含 `targets`，不含 all-features）。
+
 **排除** `dynamic-native` / `dynamic-wasm` / `dynamic-wasm-component`：docs.rs 环境易因 Extism / libloading / wasmtime 系统依赖失败；这些 API 仍可通过本地 `--features` 与 Feature 矩阵文档查阅（见 [`feature-matrix.md`](feature-matrix.md)）。
 
 本地对齐 docs.rs 构建：

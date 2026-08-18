@@ -77,6 +77,9 @@ cargo test -p plugctx --test acceptance_story_10_2
 # crates.io README 不可变与 yank（Story 1.3 / FR6）
 cargo test -p plugctx --test acceptance_story_10_3
 
+# docs.rs metadata 守门（Story 1.4 / FR7）
+cargo test -p plugctx --test acceptance_story_10_4
+
 # 0.y 版本策略与 CHANGELOG 对齐（Story 9.4 / FR54）
 cargo test -p plugctx --test acceptance_story_9_4
 # 或直接：

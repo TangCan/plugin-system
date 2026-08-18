@@ -20,3 +20,7 @@ syn = { workspace = true }
 [dev-dependencies]
 plugctx = { workspace = true }
 trybuild = { workspace = true }
+
+# 无可选 features；禁止 all-features = true（Story 1.4 / FR7）。
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
