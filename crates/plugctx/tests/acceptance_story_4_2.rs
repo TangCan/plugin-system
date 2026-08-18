@@ -172,3 +172,60 @@ fn context_dispose_physically_unloads_library() {
         load_native_plugin(example_lib("hello_plugin")).expect("reload after context dispose");
     assert_eq!(again.name(), "hello");
 }
+
+/// Story 1.2 AC#1: dispose hello 后加载另一路径 echo，新行为可用，旧 invoker 不可用。
+#[test]
+fn reload_different_path_hello_then_echo() {
+    let ctx = Context::new();
+    let hello = load_native_plugin(example_lib("hello_plugin")).expect("load hello");
+    let hello_handle = ctx.plugin(hello).expect("install hello");
+    ctx.start().expect("start");
+    let old = ctx.get::<NativeInvoker>().expect("hello invoker").clone();
+    assert_eq!(
+        String::from_utf8_lossy(&old.call("greet", b"x").expect("hello greet")),
+        "hello, x"
+    );
+
+    hello_handle.dispose().expect("dispose hello");
+    assert!(old.call("greet", b"x").is_err());
+
+    let echo = load_native_plugin(example_lib("echo_plugin")).expect("load echo");
+    let _echo_handle = ctx.plugin(echo).expect("install echo after start");
+    let invoker = ctx.get::<NativeInvoker>().expect("echo invoker");
+    assert_eq!(invoker.call("echo", b"ping").expect("echo"), b"ping");
+    assert!(
+        invoker.call("greet", b"x").is_err(),
+        "echo 插件不应再提供 hello 的 greet"
+    );
+}
+
+/// Story 1.2 AC#2: 同路径覆盖新制品后再 load（Linux/macOS；Windows 文件锁则跳过覆盖）。
+#[cfg(not(windows))]
+#[test]
+fn reload_same_path_after_replacing_artifact() {
+    let tmp = std::env::temp_dir().join(format!(
+        "plugctx-hotplug-{}-{}.so",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .expect("clock")
+            .as_nanos()
+    ));
+    std::fs::copy(example_lib("hello_plugin"), &tmp).expect("copy hello to temp");
+
+    let ctx = Context::new();
+    let first = load_native_plugin(&tmp).expect("load temp hello");
+    assert_eq!(first.name(), "hello");
+    let handle = ctx.plugin(first).expect("install");
+    ctx.start().expect("start");
+    handle.dispose().expect("physical unload");
+
+    std::fs::copy(example_lib("echo_plugin"), &tmp).expect("overwrite temp with echo");
+    let second = load_native_plugin(&tmp).expect("load replaced artifact");
+    assert_eq!(second.name(), "echo");
+    let _h2 = ctx.plugin(second).expect("install echo");
+    let invoker = ctx.get::<NativeInvoker>().expect("echo invoker");
+    assert_eq!(invoker.call("echo", b"swap").expect("echo"), b"swap");
+
+    let _ = std::fs::remove_file(&tmp);
+}
