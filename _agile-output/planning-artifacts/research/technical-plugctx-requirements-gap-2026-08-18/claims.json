@@ -1,0 +1,7 @@
+[
+  {"claim": "plugctx and plugctx-derive unpublished on crates.io", "class": "versions/compatibility", "pub_date": "2026-08"},
+  {"claim": "Cargo.toml missing repository field", "class": "release", "pub_date": "2026-08"},
+  {"claim": "no GitHub Actions workflow", "class": "release", "pub_date": "2026-08"},
+  {"claim": "core and extension APIs implemented", "class": "implementation", "pub_date": "2026-08"},
+  {"claim": "requirements inventory of kernel vs extensions", "class": "capability-inventory", "pub_date": "2026-08"}
+]

@@ -24,7 +24,7 @@ async = ["dep:async-trait", "dep:futures"]
 parallel = ["async"]
 # 跨线程 Context：Arc + RwLock/Mutex，Send+Sync 约束（FR22 / 设计 §4.6）。
 thread-safe = ["dep:parking_lot"]
-# 原生动态库：稳定 C ABI + libloading；逻辑卸载默认不 dlclose（FR23–FR25）。
+# 原生动态库：稳定 C ABI + libloading；dispose 后 Drop Library（物理卸载）。
 # ABI 布局在包内 `c_abi`（不 path-依赖未上架的 plugin-api，以便 crates.io dry-run / FR51）。
 # 仅经 `dep:` / 本具名 feature 启用（FR52）。
 dynamic-native = ["dep:libloading"]

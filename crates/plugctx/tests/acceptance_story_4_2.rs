@@ -1,4 +1,4 @@
-//! Acceptance tests for story 4.2 — dynamic-native（C ABI + libloading，逻辑卸载）。
+//! Acceptance tests for story 4.2 / 1.1 — dynamic-native（C ABI + libloading，物理卸载）。
 //!
 //! 需先构建示例插件，再启用 feature：
 //! `cargo build -p hello_plugin -p echo_plugin`
@@ -95,11 +95,10 @@ fn abi_mismatch_rejects_before_create() {
     }
 }
 
-/// AC#3: dispose = 逻辑卸载（撤销 Context 注册）；不要求 dlclose。
+/// Story 1.1 AC#1/#4: dispose = 先撤销 Context 注册，再 Drop Library（物理卸载）。
 #[test]
-fn dispose_is_logical_unload_not_dlclose() {
+fn dispose_physically_unloads_library() {
     let plugin = load_native_plugin(example_lib("hello_plugin")).expect("load");
-    let library_kept = plugin.library_mapping_retained();
 
     let ctx = Context::new();
     let handle = ctx.plugin(plugin).expect("install");
@@ -112,12 +111,64 @@ fn dispose_is_logical_unload_not_dlclose() {
         ctx.get::<NativeInvoker>().is_none(),
         "逻辑卸载后应撤销插件 build 登记的服务"
     );
-    assert!(
-        library_kept,
-        "NativePlugin 契约：默认保留动态库映射，不以 dlclose 为正确性前提"
+
+    // 同路径再次打开动态库必须成功（映射已释放，不为 ManuallyDrop 泄漏）。
+    let again =
+        load_native_plugin(example_lib("hello_plugin")).expect("reload after physical unload");
+    assert_eq!(again.name(), "hello");
+}
+
+/// Story 1.1 AC#2: dispose 前克隆的 NativeInvoker 不可再成功 call（NFR3：Error，非 panic）。
+#[test]
+fn stale_invoker_call_fails_after_dispose() {
+    let plugin = load_native_plugin(example_lib("hello_plugin")).expect("load");
+    let ctx = Context::new();
+    let handle = ctx.plugin(plugin).expect("install");
+    ctx.start().expect("start");
+
+    let invoker = ctx.get::<NativeInvoker>().expect("invoker").clone();
+    assert_eq!(
+        String::from_utf8_lossy(&invoker.call("greet", b"world").expect("pre-dispose")),
+        "hello, world"
     );
 
-    // 同路径再次加载成功（证明先前卸载未依赖 dlclose 正确性）。
-    let again = load_native_plugin(example_lib("hello_plugin")).expect("reload");
+    handle.dispose().expect("dispose");
+
+    let err = match invoker.call("greet", b"world") {
+        Ok(bytes) => panic!("stale invoker must not succeed, got {bytes:?}"),
+        Err(e) => e,
+    };
+    assert!(
+        matches!(
+            err,
+            Error::NativeCall { .. } | Error::PluginAlreadyDisposed | Error::AlreadyDisposed
+        ),
+        "expected matchable native/dispose error, got {err:?}"
+    );
+}
+
+/// Story 1.1：Context 级 dispose 也必须物理卸载（与 PluginHandle::dispose 同一 Drop 路径）。
+#[test]
+fn context_dispose_physically_unloads_library() {
+    let plugin = load_native_plugin(example_lib("hello_plugin")).expect("load");
+    let ctx = Context::new();
+    let handle = ctx.plugin(plugin).expect("install");
+    ctx.start().expect("start");
+    let invoker = ctx.get::<NativeInvoker>().expect("invoker").clone();
+
+    ctx.dispose();
+    assert!(!handle.is_alive() || ctx.is_disposed());
+    let err = invoker
+        .call("greet", b"world")
+        .expect_err("context dispose must invalidate native invoker");
+    assert!(
+        matches!(
+            err,
+            Error::NativeCall { .. } | Error::PluginAlreadyDisposed | Error::AlreadyDisposed
+        ),
+        "expected matchable error, got {err:?}"
+    );
+    let again =
+        load_native_plugin(example_lib("hello_plugin")).expect("reload after context dispose");
     assert_eq!(again.name(), "hello");
 }

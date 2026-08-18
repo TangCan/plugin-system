@@ -1,16 +1,15 @@
-//! `dynamic-native`：稳定 C ABI + `libloading` 加载路径（FR23–FR25）。
+//! `dynamic-native`：稳定 C ABI + `libloading` 加载路径。
 //!
 //! # 契约
 //!
 //! - 仅通过 [`crate::c_abi::PluginVTable`] 跨越 DSO；**禁止**跨 DSO 传递 `dyn Trait`。
-//! - **逻辑卸载**：撤销 Context 注册与 Effect；**默认不**将正确性建立在 `dlclose` 上。
-//! - 动态库映射在进程内保留（`ManuallyDrop<Library>`），实例可 `destroy`，但库不关闭。
+//! - 卸载顺序：先撤销 Context 注册与 Effect，再 `vtable.destroy`，最后 Drop `Library`（`dlclose` / `FreeLibrary`）。
+//! - 物理卸载后，仍持有的 [`NativeInvoker`] 再 `call` 必须返回 [`Error`]，不得跳进旧 vtable。
 
 use std::ffi::{CStr, CString};
-use std::mem::ManuallyDrop;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 use libloading::{Library, Symbol};
 
@@ -41,8 +40,8 @@ impl NativeInvoker {
 }
 
 struct NativeState {
-    /// 故意不关闭：逻辑卸载 ≠ dlclose（FR25）。
-    _library: ManuallyDrop<Library>,
+    /// `destroy_instance` 取出并 Drop，即使仍有 `NativeInvoker` 的 `Arc` 克隆。
+    library: Mutex<Option<Library>>,
     vtable: PluginVTable,
     handle: AbiHandle,
     name: String,
@@ -56,13 +55,16 @@ unsafe impl Sync for NativeState {}
 
 impl NativeState {
     fn call(&self, op: &str, input: &[u8]) -> Result<Vec<u8>, Error> {
-        if self.destroyed.load(Ordering::Acquire) {
+        // 与 destroy_instance 共用这把锁，避免 dlclose 后仍跳进 vtable。
+        let mapped = self.library.lock().unwrap_or_else(|e| e.into_inner());
+        if self.destroyed.load(Ordering::Acquire) || mapped.is_none() {
             return Err(Error::NativeCall {
                 name: self.name.clone(),
                 op: op.to_owned(),
                 status: crate::c_abi::status::ERR,
             });
         }
+        let _hold_mapping = mapped;
         let op_c = CString::new(op).map_err(|_| Error::NativeBadName)?;
         let mut out_ptr: *mut u8 = std::ptr::null_mut();
         let mut out_len: usize = 0;
@@ -95,12 +97,16 @@ impl NativeState {
     }
 
     fn destroy_instance(&self) {
+        let mut mapped = self.library.lock().unwrap_or_else(|e| e.into_inner());
         if self
             .destroyed
             .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
             .is_ok()
         {
             unsafe { (self.vtable.destroy)(self.handle) };
+            let library = mapped.take();
+            drop(mapped);
+            drop(library);
         }
     }
 }
@@ -108,7 +114,6 @@ impl NativeState {
 impl Drop for NativeState {
     fn drop(&mut self) {
         self.destroy_instance();
-        // `_library` 为 ManuallyDrop：不运行 Library::drop，故默认不 dlclose。
     }
 }
 
@@ -132,11 +137,6 @@ impl NativePlugin {
     pub fn call(&self, op: &str, input: &[u8]) -> Result<Vec<u8>, Error> {
         self.inner.call(op, input)
     }
-
-    /// 契约探针：动态库映射在逻辑卸载后仍视为保留（不以 dlclose 为前提）。
-    pub fn library_mapping_retained(&self) -> bool {
-        true
-    }
 }
 
 impl Plugin for NativePlugin {
@@ -145,7 +145,7 @@ impl Plugin for NativePlugin {
             inner: Arc::clone(&self.inner),
         });
         let inner = Arc::clone(&self.inner);
-        // Effect 清理：销毁实例，仍不 dlclose（Library 为 ManuallyDrop）。
+        // Effect 清理：destroy 实例并 Drop Library（物理卸载）。
         let _ = ctx.effect(move || {
             let inner = Arc::clone(&inner);
             move || inner.destroy_instance()
@@ -212,7 +212,7 @@ pub fn load_native_plugin_with_host_abi(
     }
 
     let state = Arc::new(NativeState {
-        _library: ManuallyDrop::new(library),
+        library: Mutex::new(Some(library)),
         vtable,
         handle,
         name,
@@ -282,11 +282,5 @@ mod tests {
         assert_eq!(CREATE_HITS.load(Ordering::SeqCst), 0);
         let _ = vtable; // create 未被调用
         assert_eq!(CREATE_HITS.load(Ordering::SeqCst), 0);
-    }
-
-    #[test]
-    fn library_mapping_retained_is_true() {
-        // 无真实 .so 时仅验证契约方法存在于类型上（集成测覆盖真实加载）。
-        let _ = NativePlugin::library_mapping_retained;
     }
 }
