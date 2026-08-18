@@ -1,0 +1,16 @@
+[package]
+name = "plugin-host"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Dynamic plugin loader and demo CLI"
+publish = false
+
+[[bin]]
+name = "plugin-host"
+path = "src/main.rs"
+
+[dependencies]
+plugin-api = { workspace = true }
+libloading = { workspace = true }
+thiserror = { workspace = true }

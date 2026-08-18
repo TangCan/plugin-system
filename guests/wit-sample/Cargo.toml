@@ -1,0 +1,22 @@
+# Standalone package (not a workspace member). Empty [workspace] avoids inheriting
+# plugin-system/Cargo.toml so host CI does not compile this for the host target.
+[workspace]
+
+[package]
+name = "wit-sample-guest"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+publish = false
+description = "Minimal wasm32-wasip2 WIT world sample guest (FR50); not a workspace member"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wit-bindgen = "0.60"
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = "symbols"

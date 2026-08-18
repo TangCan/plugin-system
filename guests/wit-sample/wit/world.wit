@@ -1,0 +1,6 @@
+package plugctx:sample@0.1.0;
+
+/// Minimal demo world for the plugctx Component Model path (FR50).
+world sample {
+  export add: func(a: s32, b: s32) -> s32;
+}

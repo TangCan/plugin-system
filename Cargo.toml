@@ -1,0 +1,53 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/plugctx",
+    "crates/plugctx-derive",
+    "crates/plugin-api",
+    "crates/plugin-host",
+    "crates/plugins/hello",
+    "crates/plugins/echo",
+    "examples",
+]
+default-members = [
+    "crates/plugctx",
+    "crates/plugctx-derive",
+    "crates/plugin-api",
+    "crates/plugin-host",
+    "crates/plugins/hello",
+    "crates/plugins/echo",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+authors = ["release_check"]
+readme = "README.md"
+
+[workspace.dependencies]
+# path + version：crates.io 发布规则（FR51）；plugin-api 本身 publish = false。
+plugin-api = { path = "crates/plugin-api", version = "0.1.0" }
+plugctx = { path = "crates/plugctx", version = "0.1.0" }
+libloading = "0.8"
+slotmap = "1"
+thiserror = "2"
+async-trait = "0.1"
+futures = "0.3"
+parking_lot = "0.12"
+proc-macro2 = "1"
+quote = "1"
+syn = { version = "2", features = ["full"] }
+trybuild = "1"
+proptest = "1"
+# 基准测试（Story 5.7 / FR40）；仅 bench/dev，不进默认依赖图（NFR1）。
+criterion = { version = "0.5", features = ["html_reports"] }
+tracing = "0.1"
+# 仅测试捕获 span；不得进入 plugctx 正常依赖（NFR1 / FR37）。
+tracing-subscriber = { version = "0.3", default-features = true }
+# WASM 动态路径（feature dynamic-wasm）；不得进入默认依赖图。
+extism = "1.30"
+# Component Model 路径（feature dynamic-wasm-component）；不得进入默认依赖图（FR47 / NFR14）。
+# 钉 47.x（crates.io 线 47.0.3，2026-07-31）；详见 docs/component-model-versions.md。
+wasmtime = "47"
+

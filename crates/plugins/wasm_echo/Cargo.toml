@@ -1,0 +1,16 @@
+[package]
+name = "wasm_echo"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "Extism PDK guest: echo bytes (rebuild plugctx/testdata/echo.wasm)"
+publish = false
+
+# 独立于 plugin-system workspace，避免默认 `cargo test --workspace` 编译 PDK。
+[workspace]
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+extism-pdk = "1.4"

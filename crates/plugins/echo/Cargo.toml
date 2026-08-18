@@ -1,0 +1,13 @@
+[package]
+name = "echo_plugin"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Example plugin: echo bytes"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+plugin-api = { workspace = true }

@@ -1,0 +1,15 @@
+error[E0521]: borrowed data escapes outside of function
+ --> tests/ui/event_must_be_static.rs:7:13
+  |
+6 |   fn register_non_static<'a>(ctx: &Context, s: &'a str) {
+  |                          --                 - `s` is a reference that is only valid in the function body
+  |                          |
+  |                          lifetime `'a` defined here
+7 |       let _ = ctx.on(move |ev: &Borrowed<'a>| {
+  |  _____________^
+8 | |         let _ = (ev.0, s);
+9 | |     });
+  | |      ^
+  | |      |
+  | |______`s` escapes the function body here
+  |        argument requires that `'a` must outlive `'static`

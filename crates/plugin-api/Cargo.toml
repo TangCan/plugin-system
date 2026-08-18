@@ -1,0 +1,9 @@
+[package]
+name = "plugin-api"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Stable C ABI + Rust helpers for the plugin-system scaffold"
+publish = false
+
+[dependencies]

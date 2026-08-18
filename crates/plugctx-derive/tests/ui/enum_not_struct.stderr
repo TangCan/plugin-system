@@ -1,0 +1,5 @@
+error: #[derive(Plugin)] 仅支持结构体（struct）
+ --> tests/ui/enum_not_struct.rs:4:6
+  |
+4 | enum Bad {
+  |      ^^^

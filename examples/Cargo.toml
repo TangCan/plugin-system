@@ -1,0 +1,32 @@
+[package]
+name = "plugctx-examples"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+publish = false
+description = "Runnable demos for plugctx (not published; workspace examples package)"
+
+[features]
+default = []
+# 重能力：按需开启，避免默认检查拉 Extism/wasmtime
+wasm = ["plugctx/dynamic-wasm"]
+component = ["plugctx/dynamic-wasm-component"]
+
+[dev-dependencies]
+plugctx = { workspace = true }
+plugctx-derive = { path = "../crates/plugctx-derive", version = "0.1.0" }
+
+[[example]]
+name = "derive-plugin"
+path = "derive-plugin.rs"
+
+[[example]]
+name = "component-add"
+path = "component-add.rs"
+required-features = ["component"]
+
+[[example]]
+name = "wasm-echo"
+path = "wasm-echo.rs"
+required-features = ["wasm"]

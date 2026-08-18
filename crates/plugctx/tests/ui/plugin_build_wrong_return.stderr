@@ -1,0 +1,13 @@
+error[E0053]: method `build` has an incompatible type for trait
+ --> tests/ui/plugin_build_wrong_return.rs:7:44
+  |
+7 |     fn build(&self, _ctx: &mut Context) -> Result<i32, Error> {
+  |                                            ^^^^^^^^^^^^^^^^^^ expected `()`, found `i32`
+  |
+  = note: expected signature `fn(&BadReturn, &mut plugctx::Context) -> Result<(), plugctx::Error>`
+             found signature `fn(&BadReturn, &mut plugctx::Context) -> Result<i32, plugctx::Error>`
+help: change the output type to match the trait
+  |
+7 -     fn build(&self, _ctx: &mut Context) -> Result<i32, Error> {
+7 +     fn build(&self, _ctx: &mut Context) -> Result<(), plugctx::Error> {
+  |

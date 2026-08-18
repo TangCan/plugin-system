@@ -1,0 +1,184 @@
+[package]
+name = "plugctx"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Plugctx plugin framework core (minimal sync kernel)"
+authors.workspace = true
+documentation = "https://docs.rs/plugctx"
+readme.workspace = true
+# repository：本地暂无公开远端；必填等价项见 docs/publishing.md（FR51）。
+
+# docs.rs：仅启用轻量扩展子集，避免 Extism/libloading/wasmtime 系统依赖导致构建失败（FR52）。
+# 完整说明见 docs/publishing.md「docs.rs 构建子集」。
+[package.metadata.docs.rs]
+features = ["async", "parallel", "thread-safe", "tracing", "stages"]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[features]
+# 空 default：默认同步核心不拉重运行时（FR52 / NFR14）。
+default = []
+# 异步插件构建（FR20）；不引入具体运行时（NFR1 / 设计 §4.1.5）。
+async = ["dep:async-trait", "dep:futures"]
+# 宿主侧并行事件 fan-out（FR21）；依赖 async 以复用 futures（NFR5 / 设计 §4.2）。
+parallel = ["async"]
+# 跨线程 Context：Arc + RwLock/Mutex，Send+Sync 约束（FR22 / 设计 §4.6）。
+thread-safe = ["dep:parking_lot"]
+# 原生动态库：稳定 C ABI + libloading；逻辑卸载默认不 dlclose（FR23–FR25）。
+# ABI 布局在包内 `c_abi`（不 path-依赖未上架的 plugin-api，以便 crates.io dry-run / FR51）。
+# 仅经 `dep:` / 本具名 feature 启用（FR52）。
+dynamic-native = ["dep:libloading"]
+# WASM 动态路径：Extism 真实引擎 + 实例级显式 close/free（FR26）。
+# 仅本 feature 拉入 extism，不得进入默认依赖图（NFR5 / FR52）。
+dynamic-wasm = ["dep:extism"]
+# Component Model：wasmtime::component 嵌入骨架（FR47）；与 Extism 路径分 feature（NFR14）。
+# 仅本 feature 拉入 wasmtime，不得进入默认依赖图（FR52）。
+dynamic-wasm-component = ["dep:wasmtime"]
+# 诊断 span/事件门面（FR37 / 设计 §7.6）；不引入 tracing-subscriber（NFR1）。
+tracing = ["dep:tracing"]
+# 扩展生命周期阶段事件 Init/PostStart/PreDispose（FR32 / 设计 §4.7）；零额外依赖。
+stages = []
+
+[dependencies]
+# 设计 §7.4：插件条目用 slotmap 稳定键存储（FR36）。
+slotmap = { workspace = true }
+# Error 派生（FR35 / 设计 §6.2.5 / §7.5）。
+thiserror = { workspace = true }
+async-trait = { workspace = true, optional = true }
+futures = { workspace = true, optional = true }
+parking_lot = { workspace = true, optional = true }
+libloading = { workspace = true, optional = true }
+tracing = { workspace = true, optional = true }
+extism = { workspace = true, optional = true }
+wasmtime = { workspace = true, optional = true }
+
+[dev-dependencies]
+# 仅测试驱动 Future；非运行时绑定（NFR1）。启用 async/parallel feature 的验收测试需要。
+futures = { workspace = true }
+# 编译失败套件（Story 5.6 / FR39；骨架始于 5.3）。
+trybuild = { workspace = true }
+# 仅验收捕获 span；不得进入 [dependencies]（Story 5.4 / NFR1）。
+tracing-subscriber = { workspace = true }
+# 属性测试（Story 5.5 / FR38）；不得进入 [dependencies]。
+proptest = { workspace = true }
+# 核心路径基准（Story 5.7 / FR40）；不得进入 [dependencies]。
+criterion = { workspace = true }
+
+[[bench]]
+name = "core_paths"
+harness = false
+
+[[test]]
+name = "ui"
+path = "tests/ui.rs"
+
+[[test]]
+name = "acceptance_story_3_1"
+path = "tests/acceptance_story_3_1.rs"
+required-features = ["async"]
+
+[[test]]
+name = "acceptance_story_3_2"
+path = "tests/acceptance_story_3_2.rs"
+required-features = ["parallel"]
+
+[[test]]
+name = "acceptance_story_4_1"
+path = "tests/acceptance_story_4_1.rs"
+required-features = ["thread-safe"]
+
+[[test]]
+name = "acceptance_story_4_2"
+path = "tests/acceptance_story_4_2.rs"
+required-features = ["dynamic-native"]
+
+[[test]]
+name = "acceptance_story_4_3"
+path = "tests/acceptance_story_4_3.rs"
+required-features = ["dynamic-wasm"]
+
+[[test]]
+name = "acceptance_story_4_4"
+path = "tests/acceptance_story_4_4.rs"
+required-features = ["dynamic-native", "dynamic-wasm"]
+
+[[test]]
+name = "acceptance_story_4_5"
+path = "tests/acceptance_story_4_5.rs"
+required-features = ["dynamic-native", "dynamic-wasm"]
+
+[[test]]
+name = "acceptance_story_5_4"
+path = "tests/acceptance_story_5_4.rs"
+required-features = ["tracing"]
+
+[[test]]
+name = "acceptance_story_6_1"
+path = "tests/acceptance_story_6_1.rs"
+required-features = ["stages"]
+
+[[test]]
+name = "acceptance_story_6_1_async"
+path = "tests/acceptance_story_6_1_async.rs"
+required-features = ["async", "stages"]
+
+[[test]]
+name = "acceptance_story_7_1"
+path = "tests/acceptance_story_7_1.rs"
+required-features = ["dynamic-wasm"]
+
+[[test]]
+name = "acceptance_story_7_2"
+path = "tests/acceptance_story_7_2.rs"
+required-features = ["dynamic-wasm"]
+
+[[test]]
+name = "acceptance_story_7_3"
+path = "tests/acceptance_story_7_3.rs"
+
+[[test]]
+name = "acceptance_story_8_1"
+path = "tests/acceptance_story_8_1.rs"
+required-features = ["dynamic-wasm-component"]
+
+[[test]]
+name = "acceptance_story_8_2"
+path = "tests/acceptance_story_8_2.rs"
+required-features = ["dynamic-wasm", "dynamic-wasm-component"]
+
+[[test]]
+name = "acceptance_story_8_3"
+path = "tests/acceptance_story_8_3.rs"
+required-features = ["dynamic-wasm-component"]
+
+[[test]]
+name = "acceptance_story_8_4"
+path = "tests/acceptance_story_8_4.rs"
+required-features = ["dynamic-wasm-component"]
+
+[[test]]
+name = "acceptance_story_9_1"
+path = "tests/acceptance_story_9_1.rs"
+
+[[test]]
+name = "acceptance_story_9_2"
+path = "tests/acceptance_story_9_2.rs"
+
+[[test]]
+name = "acceptance_story_9_3"
+path = "tests/acceptance_story_9_3.rs"
+
+[[test]]
+name = "acceptance_story_9_4"
+path = "tests/acceptance_story_9_4.rs"
+
+# 包内扩展示例：未启用对应 feature 时跳过（默认 `cargo check --examples` 仍只编 combo）。
+[[example]]
+name = "async-start"
+path = "examples/async-start.rs"
+required-features = ["async"]
+
+[[example]]
+name = "stages-lifecycle"
+path = "examples/stages-lifecycle.rs"
+required-features = ["stages"]

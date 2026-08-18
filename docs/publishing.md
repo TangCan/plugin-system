@@ -1,0 +1,155 @@
+# crates.io 发布元数据与边界（FR51）
+
+本文档列出 **`plugctx` / `plugctx-derive`** 上架前的必填（或推荐）清单，以及工作区内 **不可发布** 成员边界。
+
+## 公开 crate 必填 / 等价项
+
+| 字段 | 要求 | 本仓库落点 |
+|------|------|------------|
+| `license` | crates.io 必填 | `workspace.package.license` → 两 crate 继承 |
+| `description` | crates.io 必填 | 各 crate `[package].description` |
+| `repository` | 推荐；无公开远端时以本文档为**必填等价项** | 本地工作区暂无 `origin` URL；实际上架前须补真实 `repository`（及可选 `homepage`） |
+| `documentation` | 推荐 | `https://docs.rs/<crate>` |
+| 路径依赖 `version` | 发布时必填 | `[workspace.dependencies]` 中 `plugctx` 等带 `version` |
+
+## `publish = false` 边界
+
+下列成员/客人**不得**上架（fixture / 内部脚手架 / 样例）：
+
+| 成员 | 说明 |
+|------|------|
+| `plugin-api` | C ABI 脚手架；ABI 正文由 `plugctx` 的 `c_abi` 同源 `include!` |
+| `plugin-host` | 演示 CLI |
+| `hello_plugin` / `echo_plugin` | 示例 `cdylib` |
+| `wasm_echo`（独立 workspace） | Extism PDK fixture |
+| `wit-sample-guest`（非 workspace member） | wasip2 样例客人 |
+| `plugctx-examples`（`examples/`） | 工作区演示包（derive / wasm / component） |
+
+## Dry-run
+
+在 `plugin-system/` 下，推荐与 CI 一致（Cargo ≥1.90）：
+
+```bash
+cargo publish --workspace --dry-run
+```
+
+亦可单独验证主包：
+
+```bash
+cargo publish -p plugctx --dry-run
+```
+
+> **注意：** 在 `plugctx` **尚未**出现在 crates.io 之前，单独 `cargo publish -p plugctx-derive --dry-run` 会因剥离 `path` 后无法解析 `plugctx` 而失败——属预期。应用 `--workspace` dry-run，或实际上架时**先发 `plugctx` 再发 `plugctx-derive`**。
+
+默认 features 下 `plugctx` **不**依赖未上架的 workspace 成员（`dynamic-native` 使用包内 `c_abi`，不再 path-依赖 `plugin-api`）。
+
+> 包名曾为 `pluggable`，因 crates.io 上已有无关方占用而改为 **`plugctx`**（见下文 FR54）。发布前仍应复验 `plugctx` / `plugctx-derive` 是否仍空闲。
+
+## 空 default 与 docs.rs 构建子集（FR52 / NFR14）
+
+| 项 | 约定 |
+|----|------|
+| `default` | **空**（`default = []`）：默认同步核心不拉 Extism / libloading / wasmtime |
+| 重能力 | 仅具名 feature + `dep:`：`dynamic-native`→`libloading`，`dynamic-wasm`→`extism`，`dynamic-wasm-component`→`wasmtime` |
+| docs.rs | `[package.metadata.docs.rs]` **不用** `all-features` |
+
+**docs.rs 安全子集**（与 `crates/plugctx/Cargo.toml` 一致）：
+
+```toml
+[package.metadata.docs.rs]
+features = ["async", "parallel", "thread-safe", "tracing", "stages"]
+targets = ["x86_64-unknown-linux-gnu"]
+```
+
+**排除** `dynamic-native` / `dynamic-wasm` / `dynamic-wasm-component`：docs.rs 环境易因 Extism / libloading / wasmtime 系统依赖失败；这些 API 仍可通过本地 `--features` 与 Feature 矩阵文档查阅（见 [`feature-matrix.md`](feature-matrix.md)）。
+
+本地对齐 docs.rs 构建：
+
+```bash
+cargo doc -p plugctx --no-deps --features async,parallel,thread-safe,tracing,stages
+```
+
+验收：`cargo test -p plugctx --test acceptance_story_9_2`。
+
+## Release 工作流（FR53 / NFR13）
+
+目标：发布可重复；CI 至少阻断失败的 `cargo publish --dry-run`；实际上架遵守 crates.io 约束。
+
+### CI dry-run 门禁
+
+在 `plugin-system/`：
+
+```bash
+./scripts/ci-publish-dry-run.sh
+# 或完整门禁（已接入 dry-run）：
+./scripts/ci-test.sh
+```
+
+脚本使用 `set -euo pipefail`：`cargo publish --workspace --dry-run` 失败即以非零退出**阻断流水线**（FR53）。  
+`--workspace`（Cargo ≥1.90）只打包可发布成员；`publish = false` 的 fixture 自动跳过。  
+CI / 脏工作树使用 `--allow-dirty`；**真正 upload 前**须在干净树、无该旗标下再跑一次。
+
+可选 GitHub Actions 示例：仓库根 [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml)（调用 `ci-test.sh`）。
+
+### 鉴权：registry token 或 trusted publishing
+
+| 方式 | 用途 | 注意 |
+|------|------|------|
+| `CARGO_REGISTRY_TOKEN` | `cargo publish` / release-plz | 最小权限；泄漏后**轮换 token**，**不以 yank 代替轮换**（NFR13） |
+| Trusted publishing（crates.io ↔ GitHub OIDC） | 自动化发版 | 配置见 crates.io 文档；适合已存在的 crate |
+
+### 新 crate 名：首次须手工发布
+
+对**从未上架过的 crate 名**，crates.io 要求至少一次**手工** `cargo publish`（或等价人工确认）建立所有权；**不可**仅靠 trusted publishing / 纯 CI 完成首次创建（FR53）。
+
+本工作区公开包：`plugctx`、`plugctx-derive`。
+> 诚实现状：曾用名 `pluggable` 在 crates.io 上已被无关方占用；现名 `plugctx` 经 2026-08-17 探测为空闲，但**首次 publish 前仍须复验**，404 不等于预订。
+
+### 速率限制与永久发布（NFR13）
+
+- crates.io 对**新 crate / 新版本**有速率限制；密集试发易 429，应退避而非硬刷。
+- 发布**永久**：`yank` ≠ 删除；yank 只阻止新依赖解析，已下载副本仍在。密钥泄露靠**轮换 token**，不要指望 yank「收回」包。
+
+### release-plz（或等价）操作说明
+
+推荐 [release-plz](https://release-plz.dev/docs/github/quickstart)（GitHub Action + PR 发版），亦可用 `cargo-release` 等等价工具。最小流程：
+
+1. **本地/CI**：`./scripts/ci-publish-dry-run.sh` 绿。
+2. **首次每个新名**：维护者本机 `cargo login` 后手工 `cargo publish -p <crate>`（见上节）。
+3. **后续版本**：配置 `CARGO_REGISTRY_TOKEN` 或 trusted publishing；用 release-plz `release-pr` → 合并 → `release`（示例注释见 `.github/workflows/ci.yml`）。
+4. **文档**：发版 PR 同步 `CHANGELOG.md` 与工作区 `version`（能力清单 vs SemVer 见下文 FR54）。
+
+验收：`cargo test -p plugctx --test acceptance_story_9_3`。
+
+## 0.y 版本策略、锁步与改名（FR54）
+
+### SemVer `0.y` vs 能力清单
+
+| 项 | 约定 |
+|----|------|
+| 加性能力 | 新 Cargo feature / 文档能力可留在**同一** `0.y` |
+| Breaking | 破坏性（breaking）变更才 bump `0.y`（或按 `0.y.z` 惯例） |
+| CHANGELOG `[0.2.0]` | **能力清单**标题，**不等于**强制把 `workspace.package.version` 写成 `0.2.0` |
+| 当前工作区 | `version = "0.1.0"` 可同时承载 0.2 清单已交付的扩展（见 [`CHANGELOG.md`](../CHANGELOG.md)） |
+
+### `plugctx` ↔ `plugctx-derive` 版本耦合
+
+- 两 crate 共享 `[workspace.package].version`，**锁步**发布：同一次发版使用**同一版本号**。
+- `plugctx-derive` 仅在 `dev-dependencies` 依赖路径上的 `plugctx`（宏 crate 本身不强制运行时依赖）；对外文档仍要求消费方将二者视为**同版本配套**。
+- 若将来拆分兼容范围，须在本段显式改为范围依赖并更新本验收；**当前策略是锁步，不是宽松 `^` 矩阵**。
+
+### crates.io 包名：`pluggable` → `plugctx`（诚实现状）
+
+| 名称 | 状态（决策依据） |
+|------|------------------|
+| `pluggable` | crates.io **已占用**（无关方 `0.1.0` async plugin system）——**不可**作为本库上架名 |
+| `plugctx` / `plugctx-derive` | **已采用**（2026-08-17 API 探测均为 404；研究卷宗 `technical-pluggable-crate-rename-2026-08-17`） |
+
+**上架前仍须：**
+
+1. **复验空闲**：`GET https://crates.io/api/v1/crates/plugctx`（及 `plugctx-derive`）仍为 404，或 `cargo publish --dry-run` 无「already exists」冲突。
+2. **尽快首次手工 publish** 占名（404 ≠ 预订；存在被抢注风险）。
+3. 若发布前发现 `plugctx` 已被抢：再走改名流程（另选未占用名，更新 `[package].name` 与文档）。
+4. README / docs 可一句区分：本库 **不是** crates.io 上的历史包名 `pluggable`（他方）。
+
+验收：`cargo test -p plugctx --test acceptance_story_9_4`。

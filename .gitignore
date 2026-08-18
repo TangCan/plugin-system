@@ -1,0 +1,15 @@
+# Rust / Cargo
+/target/
+**/target/
+Cargo.toml.orig
+
+# Editor / OS
+.idea/
+.vscode/
+*.swp
+*~
+.DS_Store
+
+# Local / generated
+*.log
+.direnv/

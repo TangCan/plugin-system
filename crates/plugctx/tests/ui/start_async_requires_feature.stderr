@@ -1,0 +1,5 @@
+error[E0599]: no method named `start_async` found for struct `plugctx::Context` in the current scope
+ --> tests/ui/start_async_requires_feature.rs:6:17
+  |
+6 |     let _ = ctx.start_async();
+  |                 ^^^^^^^^^^^ method not found in `plugctx::Context`

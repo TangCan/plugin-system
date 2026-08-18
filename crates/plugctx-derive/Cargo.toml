@@ -1,0 +1,22 @@
+[package]
+name = "plugctx-derive"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Optional proc-macro helpers for the plugctx plugin framework (FR27)"
+authors.workspace = true
+documentation = "https://docs.rs/plugctx-derive"
+readme.workspace = true
+# repository：本地暂无公开远端；必填等价项见 docs/publishing.md（FR51）。
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc-macro2 = { workspace = true }
+quote = { workspace = true }
+syn = { workspace = true }
+
+[dev-dependencies]
+plugctx = { workspace = true }
+trybuild = { workspace = true }

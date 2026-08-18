@@ -1,0 +1,23 @@
+error[E0277]: the trait bound `NotAPlugin: Plugin` is not satisfied
+ --> tests/ui/plugin_must_impl_trait.rs:8:24
+  |
+8 |     let _ = ctx.plugin(NotAPlugin);
+  |                 ------ ^^^^^^^^^^ unsatisfied trait bound
+  |                 |
+  |                 required by a bound introduced by this call
+  |
+help: the trait `Plugin` is not implemented for `NotAPlugin`
+ --> tests/ui/plugin_must_impl_trait.rs:4:1
+  |
+4 | struct NotAPlugin;
+  | ^^^^^^^^^^^^^^^^^
+help: the trait `Plugin` is implemented for `Box<T>`
+ --> src/plugin.rs
+  |
+  | impl<T: Plugin + ?Sized> Plugin for Box<T> {
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+note: required by a bound in `plugctx::Context::plugin`
+ --> src/context.rs
+  |
+  |     pub fn plugin<P: Plugin + 'static>(&self, plugin: P) -> Result<PluginHandle, Error> {
+  |                      ^^^^^^ required by this bound in `Context::plugin`
