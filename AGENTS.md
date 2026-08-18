@@ -16,7 +16,7 @@ Rust workspace: in-process plugin framework `plugctx` plus optional C ABI / WASM
 
 ## Running and verifying
 
-- Full regression is `./scripts/ci-test.sh` from the repo root. Do not use `cargo test --all-features` as the sole gate: `thread-safe` conflicts with tests gated `#![cfg(not(feature = "thread-safe"))]`.
+- Full regression: `just test` from the repo root (`cargo fmt --all` then `./scripts/ci-test.sh`). Do not use `cargo test --all-features` as the sole gate: `thread-safe` conflicts with tests gated `#![cfg(not(feature = "thread-safe"))]`.
 - Before `cargo run -p plugin-host`, run `cargo build -p hello_plugin -p echo_plugin`; the host crate does not build those cdylibs. Host unit tests auto-build if the `.so` is missing.
 
 ## Conventions that differ from defaults

@@ -161,7 +161,8 @@ cargo bench -p plugctx --bench core_paths -- --baseline main
 ```bash
 cd plugin-system
 ./scripts/ci-extension-matrix.sh
-# 或完整回归（默认门 + 扩展矩阵 + tracing 5.4）
+# 或完整回归（先 rustfmt，再默认门 + 扩展矩阵 + tracing 5.4）
+just test
 ./scripts/ci-test.sh
 ```
 
@@ -173,4 +174,4 @@ cd plugin-system
 
 - 用户要点：根 `README.md`（生命周期、常见错误、Feature 矩阵、回归命令）
 - API 说明：`cargo doc -p plugctx --no-deps --open`
-- 一键脚本：`./scripts/ci-test.sh`
+- 一键脚本：`just test`（`cargo fmt --all` + `./scripts/ci-test.sh`）

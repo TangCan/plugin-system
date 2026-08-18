@@ -124,8 +124,9 @@ tracing_subscriber::fmt().with_max_level(tracing::Level::DEBUG).init();
 
 ```bash
 cd plugin-system
-# 一键回归（默认 features 门 + trybuild + bench 编译 + rustdoc + FR41 扩展矩阵）
-./scripts/ci-test.sh
+# 一键回归：先 rustfmt，再 ci-test.sh（fmt check + clippy + 默认门 + trybuild + bench 编译 + rustdoc + FR41）
+just test
+./scripts/ci-test.sh              # 不先 fmt 写回，仅检查 + 测试
 ./scripts/ci-extension-matrix.sh   # 仅 FR41 扩展矩阵
 
 cargo test -p plugctx
