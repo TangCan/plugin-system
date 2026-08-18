@@ -29,26 +29,30 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 generated: 08-18-2026 10:24
-last_updated: 08-18-2026 13:57
+last_updated: 08-18-2026 11:36
 project: plugin-system
 project_key: NOKEY
 tracking_system: file-system
 story_location: 
   /home/richard/richard/2026/2026/plugin-system/_agile-output/implementation-artifacts
 development_status:
-  epic-1: backlog
-  1-1-trusted-publishing-发版工作流: backlog
-  1-2-cargo-hack-互斥-feature-门禁: backlog
-  1-3-crates-io-readme-不可变与-yank-说明: backlog
-  1-4-docs-rs-metadata-守门: backlog
-  epic-1-retrospective: optional
+  epic-1: done
+  1-1-native-插件-dispose-时物理卸载: done
+  1-2-物理卸载后换新-so-再加载: done
+  1-3-文档废止旧-fr25-native-逻辑卸载: done
+  epic-1-retrospective: done
 
-  epic-2: backlog
-  2-1-native-卸载限度写入用户指南: backlog
-  2-2-wit-版本钉死与双-wasm-路径: backlog
-  epic-2-retrospective: optional
+  epic-2: done
+  2-1-公开-crate-指向-github-并具备上架清单: done
+  2-2-github-actions-与-clippy-门禁: done
+  epic-2-retrospective: done
 
-# Action items committed during retrospectives (section created by the retrospective workflow)
+  epic-3: done
+  3-1-cli-场景示例-含-native-热插拔: done
+  3-2-web-场景示例-tiny_http: done
+  3-3-游戏-tick-循环场景示例: done
+  3-4-独立用户指南: done
+  epic-3-retrospective: done
 action_items:
   - id: "epic-2-retro-item-1-下一版本将-workspace-package-authors-从-releas"
     epic: 2

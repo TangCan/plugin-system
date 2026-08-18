@@ -1,0 +1,24 @@
+{
+  "claims": [
+    {"claim": "WASI 0.3.0 ratified; pin WIT across toolchain", "class": "versions/compat", "pub_date": "2026-06-11"},
+    {"claim": "Wasmtime 45 runs WASI 0.3 RC; 46 enables CM async by default", "class": "versions/compat", "pub_date": "2026-06-11"},
+    {"claim": "wit-bindgen 0.58 / Wasmtime 45 still ship 0.3.0-rc-2026-03-15", "class": "versions/compat", "pub_date": "2026-08-18"},
+    {"claim": "Trusted Publishing live docs: first publish needs token; OIDC ~30 min", "class": "versions/compat", "pub_date": "2026-08-18"},
+    {"claim": "Trusted Publishing announced", "class": "ecosystem", "pub_date": "2025-07-11"},
+    {"claim": "CM+WIT as practical alternative to dlopen", "class": "landscape", "pub_date": "2025-08-05"},
+    {"claim": "Extism does not adopt Component Model for now", "class": "versions/compat", "pub_date": "2025-09-21"},
+    {"claim": "Fidius: trait macros, C ABI, WASM deny-all", "class": "landscape", "pub_date": "2026-08-18"},
+    {"claim": "dlclose soundness requires no outstanding refs/TLS", "class": "pattern", "pub_date": "2024-08-13"},
+    {"claim": "libloading Drop/close unloads; ignore errors on Drop", "class": "pattern", "pub_date": "2026-08-18"},
+    {"claim": "FreeLibrary decrements refcount only", "class": "pattern", "pub_date": "2026-08-18"},
+    {"claim": "abi_stable plugin system without unload", "class": "pattern", "pub_date": "2026-08-18"},
+    {"claim": "Extism reset/free is instance teardown", "class": "pattern", "pub_date": "2026-08-18"},
+    {"claim": "cargo-hack mutually-exclusive-features", "class": "ops", "pub_date": "2026-08-18"},
+    {"claim": "docs.rs default is not --all-features", "class": "ops", "pub_date": "2026-08-18"},
+    {"claim": "docs.rs rebuild from crates.io without new version", "class": "ops", "pub_date": "2025-07-11"},
+    {"claim": "README immutable per crate version", "class": "ops", "pub_date": "2019-01-01"},
+    {"claim": "yank is not delete", "class": "versions/compat", "pub_date": "2026-08-18"},
+    {"claim": "macOS TLS dylibs may never unload", "class": "failure", "pub_date": "2018-01-01"},
+    {"claim": "hot-lib-reloader is a development tool", "class": "landscape", "pub_date": "2026-08-18"}
+  ]
+}
