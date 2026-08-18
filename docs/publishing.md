@@ -1,6 +1,6 @@
 # crates.io 发布元数据与边界（FR51）
 
-**现状（2026-08-18）：** [`plugctx`](https://crates.io/crates/plugctx) 与 [`plugctx-derive`](https://crates.io/crates/plugctx-derive) **0.1.1 已上架**（0.1.0 仍保留）。本文档列出必填（或推荐）元数据、工作区内 **不可发布** 成员，以及**后续版本**的发版顺序。
+**现状（2026-08-18）：** [`plugctx`](https://crates.io/crates/plugctx) 与 [`plugctx-derive`](https://crates.io/crates/plugctx-derive) **0.1.2 已上架**（0.1.0 / 0.1.1 仍保留）。本文档列出必填（或推荐）元数据、工作区内 **不可发布** 成员，以及**后续版本**的发版顺序。
 
 ## 公开 crate 必填 / 等价项
 
@@ -146,7 +146,7 @@ crates.io Trusted Publishing 正文：<https://crates.io/docs/trusted-publishing
 
 crates.io 该版本页上的 README 来自该版本 `.crate` 里打包的 `readme` 文件，**绑死在该版本**。已 `cargo publish` 之后，改 Git 里的 README **不会**改掉已上架的那一版展示文案；要更新必须 **bump 版本再 publish**。
 
-举例（0.y.z，**不要**为此写成 `0.2.0`）：当前工作区是 `0.1.1`，若只为让新 README 出现在 crates.io，发 **0.1.2**；`plugctx` 与 `plugctx-derive` **锁步**同一版本。本仓库此故事**不**执行实际上架。
+举例（0.y.z，**不要**为此写成 `0.2.0`）：例如 **0.1.1 → 0.1.2**；`plugctx` 与 `plugctx-derive` **锁步**同一版本。之后若再改该版本 README，须继续 bump。
 
 `yank` 仍然 ≠ 删除（见上节）：只阻止**新**依赖解析选中该版本；已有 lockfile 与已下载副本仍在。密钥泄露靠**轮换 token**，不以 yank 代替。
 
@@ -172,7 +172,7 @@ crates.io 版本列表可以触发 **docs.rs 重建**：只刷新该版本的 **
 | 加性能力 | 新 Cargo feature / 文档能力可留在**同一** `0.y` |
 | Breaking | 破坏性（breaking）变更才 bump `0.y`（或按 `0.y.z` 惯例） |
 | CHANGELOG `[0.2.0]` | **能力清单**标题，**不等于**强制把 `workspace.package.version` 写成 `0.2.0` |
-| 当前工作区 | `version = "0.1.1"` 可同时承载 0.2 清单已交付的扩展（见 [`CHANGELOG.md`](../CHANGELOG.md)） |
+| 当前工作区 | `version = "0.1.2"` 可同时承载 0.2 清单已交付的扩展（见 [`CHANGELOG.md`](../CHANGELOG.md)） |
 
 ### `plugctx` ↔ `plugctx-derive` 版本耦合
 
@@ -185,7 +185,7 @@ crates.io 版本列表可以触发 **docs.rs 重建**：只刷新该版本的 **
 | 名称 | 状态（决策依据） |
 |------|------------------|
 | `pluggable` | crates.io **已占用**（无关方 `0.1.0` async plugin system）——**不可**作为本库上架名 |
-| `plugctx` / `plugctx-derive` | **已采用并上架**；当前最新 **0.1.1**（2026-08-18）。0.1.0 仍保留。更早 2026-08-17 API 探测为 404（研究卷宗 `technical-pluggable-crate-rename-2026-08-17`）；该空闲探测已过期。 |
+| `plugctx` / `plugctx-derive` | **已采用并上架**；当前最新 **0.1.2**（2026-08-18）。0.1.0 / 0.1.1 仍保留。更早 2026-08-17 API 探测为 404（研究卷宗 `technical-pluggable-crate-rename-2026-08-17`）；该空闲探测已过期。 |
 
 **后续发版：**
 

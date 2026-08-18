@@ -20,7 +20,7 @@ tiny_http = { version = "0.12", optional = true }
 
 [dev-dependencies]
 plugctx = { workspace = true }
-plugctx-derive = { path = "../crates/plugctx-derive", version = "0.1.1" }
+plugctx-derive = { path = "../crates/plugctx-derive", version = "0.1.2" }
 
 [[example]]
 name = "derive-plugin"

@@ -2,7 +2,7 @@
 
 Rust 插件系统工作区：既有 **C ABI `cdylib` 脚手架**（`plugin-api` / `plugin-host`），以及演进中的进程内插件框架核心库 **`plugctx`**。二者**并存演进**——`plugctx` 不立即替换 ABI 脚手架；动态加载能力按 feature 渐进接入同一 `Context` 生命周期。
 
-> crates.io：**0.1.1 已上架** — [`plugctx`](https://crates.io/crates/plugctx) / [`plugctx-derive`](https://crates.io/crates/plugctx-derive)。曾用名 `pluggable` 已被无关方占用，勿与 crates.io 上其他 `pluggable` 混淆。已发布版本的 README 绑在该版本 `.crate` 上，改文案须 bump（例如 0.1.1 → 0.1.2）再 publish；详见 [`docs/publishing.md`](docs/publishing.md)。
+> crates.io：**0.1.2 已上架** — [`plugctx`](https://crates.io/crates/plugctx) / [`plugctx-derive`](https://crates.io/crates/plugctx-derive)。曾用名 `pluggable` 已被无关方占用，勿与 crates.io 上其他 `pluggable` 混淆。已发布版本的 README 绑在该版本 `.crate` 上，改文案须 bump（例如 0.1.1 → 0.1.2）再 publish；详见 [`docs/publishing.md`](docs/publishing.md)。
 
 ```bash
 cargo add plugctx
@@ -34,7 +34,7 @@ plugin-system/
 
 ## crates.io 发布边界（FR51–FR53）
 
-- 已上架：`plugctx`、`plugctx-derive` **0.1.1**（0.1.0 仍保留；license / description / documentation；repository 见 [`docs/publishing.md`](docs/publishing.md)）
+- 已上架：`plugctx`、`plugctx-derive` **0.1.2**（0.1.0 / 0.1.1 仍保留；license / description / documentation；repository 见 [`docs/publishing.md`](docs/publishing.md)）
 - 不可发布（`publish = false`）：`plugin-api`、`plugin-host`、示例插件、WASM/WIT fixtures
 - CI dry-run 门禁：`./scripts/ci-publish-dry-run.sh`（接入 `ci-test.sh`；失败阻断）
 - 后续发版（锁步 bump、先 `plugctx` 后 `plugctx-derive`、token / trusted publishing / 速率限制）：见 [`docs/publishing.md`](docs/publishing.md)

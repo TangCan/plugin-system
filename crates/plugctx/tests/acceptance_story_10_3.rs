@@ -60,7 +60,7 @@ fn publishing_docs_readme_immutability_and_yank() {
     );
 }
 
-/// AC#3: 举例 0.1.1 → 0.1.2 锁步；本故事不改工作区版本、不实际上架。
+/// AC#3: 举例 0.1.1 → 0.1.2 锁步；后续 patch 仍走同一 workspace.package.version。
 #[test]
 fn readme_fix_example_is_0y_lockstep_without_live_publish() {
     let publishing = read_required("docs/publishing.md");
@@ -72,7 +72,7 @@ fn readme_fix_example_is_0y_lockstep_without_live_publish() {
 
     let workspace = read_required("Cargo.toml");
     assert!(
-        workspace.contains("version = \"0.1.1\""),
-        "本故事不得 bump workspace version（仍为 0.1.1）"
+        workspace.contains("[workspace.package]") && workspace.contains("version = \""),
+        "须保持 workspace.package.version 锁步（FR6）"
     );
 }

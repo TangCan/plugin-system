@@ -25,7 +25,7 @@
 //! `tracing`（诊断 span 门面；不引入订阅端）、`stages`（扩展生命周期事件）。
 //! 发布切片（0.1.0 / 0.2.0）与设计对齐：工作区 `CHANGELOG.md`、`docs/feature-matrix.md`；
 //! Component Model 版本钉死见 `docs/component-model-versions.md`；另见 `README.md` 与 `docs/testing.md`。
-//! crates.io：`plugctx` / `plugctx-derive` `0.1.1` 已上架（0.1.0 仍保留）。元数据与 `publish = false` 边界见工作区 `docs/publishing.md`（FR51）。
+//! crates.io：`plugctx` / `plugctx-derive` `0.1.2` 已上架（0.1.0 / 0.1.1 仍保留）。元数据与 `publish = false` 边界见工作区 `docs/publishing.md`（FR51）。
 
 #![deny(unsafe_op_in_unsafe_fn)]
 

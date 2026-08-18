@@ -52,7 +52,7 @@
 2. **相对 §2.4 图增补**：实现另提供 `dynamic-wasm`、`dynamic-wasm-component`、`tracing`、`stages`——§2.4 总图未逐一画出，属扩展切片增强，不改变核心默认路径。
 3. **dynamic 拆分**：设计早期常写单一 `dynamic`；实现拆为 `dynamic-native` + `dynamic-wasm`（+ 可选 `dynamic-wasm-component`），Extism 与 CM 分 feature（FR34 / FR47）。双后端经 `PluginBackend` 共存时仍须**分制品**（FR48）：Extism PDK `.wasm` 与 Component 组件二进制不兼容，**禁止**暗示一份 `.wasm` 两吃。
 4. **`tracing` 非默认**：设计 §7.6 推荐诊断门面；为满足 NFR1（默认依赖最小）故以可选 feature 提供，不引入 `tracing-subscriber`。
-5. **版本号（FR54）**：工作区 `version = "0.1.1"` 可同时承载 0.2.0 **能力清单**（见 CHANGELOG）；文档切片 ≠ 强制 bump 到 `0.2.0` 字符串。加性 feature 留同 `0.y`；breaking 才 bump。详见 [`publishing.md`](publishing.md)「0.y 版本策略」。
+5. **版本号（FR54）**：工作区 `version = "0.1.2"` 可同时承载 0.2.0 **能力清单**（见 CHANGELOG）；文档切片 ≠ 强制 bump 到 `0.2.0` 字符串。加性 feature 留同 `0.y`；breaking 才 bump。详见 [`publishing.md`](publishing.md)「0.y 版本策略」。
 
 ## 启用示例
 

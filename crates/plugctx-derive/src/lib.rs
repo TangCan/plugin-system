@@ -1,6 +1,6 @@
 //! `plugctx-derive` — 可选过程宏，减少 `Plugin` 样板（FR27）。
 //!
-//! 核心 crate `plugctx` **不**依赖本 crate；插件作者按需引入（crates.io：`plugctx-derive` `0.1.1` 已与 `plugctx` 锁步上架）。
+//! 核心 crate `plugctx` **不**依赖本 crate；插件作者按需引入（crates.io：`plugctx-derive` `0.1.2` 已与 `plugctx` 锁步上架）。
 
 use proc_macro::TokenStream;
 use quote::quote;
