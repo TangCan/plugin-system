@@ -8,7 +8,7 @@
 |------|------|------------|
 | `license` | crates.io 必填 | `workspace.package.license` → 两 crate 继承 |
 | `description` | crates.io 必填 | 各 crate `[package].description` |
-| `repository` | 推荐；无公开远端时以本文档为**必填等价项** | 本地工作区暂无 `origin` URL；实际上架前须补真实 `repository`（及可选 `homepage`） |
+| `repository` | crates.io 推荐；本仓库必填 | `workspace.package.repository` = `https://github.com/TangCan/plugin-system`（`plugctx` / `plugctx-derive` 继承） |
 | `documentation` | 推荐 | `https://docs.rs/<crate>` |
 | 路径依赖 `version` | 发布时必填 | `[workspace.dependencies]` 中 `plugctx` 等带 `version` |
 
@@ -44,6 +44,16 @@ cargo publish -p plugctx --dry-run
 默认 features 下 `plugctx` **不**依赖未上架的 workspace 成员（`dynamic-native` 使用包内 `c_abi`，不再 path-依赖 `plugin-api`）。
 
 > 包名曾为 `pluggable`，因 crates.io 上已有无关方占用而改为 **`plugctx`**（见下文 FR54）。发布前仍应复验 `plugctx` / `plugctx-derive` 是否仍空闲。
+
+## 首次上架清单
+
+无 registry token 时，本清单 + dry-run 绿即为「可上架」完成标准；实际上传由维护者执行。
+
+1. 复验 crates.io：`GET https://crates.io/api/v1/crates/plugctx` 与 `plugctx-derive` 仍空闲（404 ≠ 预订）。
+2. `./scripts/ci-publish-dry-run.sh` 非零失败必须阻断。
+3. 干净工作树上去掉 `--allow-dirty` 再跑一次 dry-run。
+4. **先发 `plugctx`，再发 `plugctx-derive`**（derive 依赖已上架的 `plugctx` 版本）。
+5. 不要把 `plugin-api`、host、示例、WIT guest 标成可发布（保持 `publish = false`）。
 
 ## 空 default 与 docs.rs 构建子集（FR52 / NFR14）
 

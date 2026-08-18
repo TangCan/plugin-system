@@ -51,9 +51,26 @@ fn public_crates_have_crates_io_metadata() {
             pkg.contains("documentation") || pkg.contains("repository"),
             "{rel} 须含 documentation 或 repository（FR51）"
         );
+        assert!(
+            text.contains("repository.workspace")
+                || pkg.contains("github.com/TangCan/plugin-system"),
+            "{rel} 须继承或声明 repository = https://github.com/TangCan/plugin-system"
+        );
     }
 
     let publishing = read_required("docs/publishing.md");
+    assert!(
+        !publishing.contains("暂无 origin") && !publishing.contains("暂无公开远端"),
+        "docs/publishing.md 不得再写本地暂无 origin"
+    );
+    assert!(
+        publishing.contains("https://github.com/TangCan/plugin-system"),
+        "docs/publishing.md 须写出真实 GitHub repository URL"
+    );
+    assert!(
+        publishing.contains("先发") && publishing.contains("plugctx-derive"),
+        "清单须写明先发 plugctx 再发 plugctx-derive"
+    );
     for needle in [
         "license",
         "description",

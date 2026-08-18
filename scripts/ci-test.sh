@@ -9,6 +9,9 @@ cd "$ROOT"
 echo "==> fmt check"
 cargo fmt --all -- --check
 
+echo "==> clippy (publishable crates, default features, -D warnings)"
+cargo clippy -p plugctx -p plugctx-derive -- -D warnings
+
 echo "==> workspace tests (default features)"
 cargo test --workspace
 

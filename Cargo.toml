@@ -24,6 +24,7 @@ edition = "2021"
 license = "MIT OR Apache-2.0"
 authors = ["release_check"]
 readme = "README.md"
+repository = "https://github.com/TangCan/plugin-system"
 
 [workspace.dependencies]
 # path + version：crates.io 发布规则（FR51）；plugin-api 本身 publish = false。

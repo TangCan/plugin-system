@@ -7,7 +7,8 @@ description = "Plugctx plugin framework core (minimal sync kernel)"
 authors.workspace = true
 documentation = "https://docs.rs/plugctx"
 readme.workspace = true
-# repository：本地暂无公开远端；必填等价项见 docs/publishing.md（FR51）。
+repository.workspace = true
+# repository：https://github.com/TangCan/plugin-system（workspace 继承；FR51）
 
 # docs.rs：仅启用轻量扩展子集，避免 Extism/libloading/wasmtime 系统依赖导致构建失败（FR52）。
 # 完整说明见 docs/publishing.md「docs.rs 构建子集」。

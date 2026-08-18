@@ -135,6 +135,14 @@ fn ci_test_keeps_default_gate_and_invokes_extension_matrix() {
         script.contains("FR41"),
         "ci-test.sh must label the FR41 extension matrix"
     );
+    assert!(
+        script.contains("clippy") && script.contains("-D warnings"),
+        "ci-test.sh must run clippy -D warnings on publishable crates"
+    );
+    assert!(
+        !script.contains("cargo test --all-features"),
+        "ci-test.sh must not use cargo test --all-features as a gate"
+    );
 }
 
 /// 文档：testing.md / README 标明扩展专项已交付。

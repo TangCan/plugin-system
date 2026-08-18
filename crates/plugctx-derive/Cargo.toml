@@ -7,7 +7,7 @@ description = "Optional proc-macro helpers for the plugctx plugin framework (FR2
 authors.workspace = true
 documentation = "https://docs.rs/plugctx-derive"
 readme.workspace = true
-# repository：本地暂无公开远端；必填等价项见 docs/publishing.md（FR51）。
+repository.workspace = true
 
 [lib]
 proc-macro = true

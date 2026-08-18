@@ -92,4 +92,10 @@ fn release_workflow_docs_cover_fr53_nfr13() {
         publishing.contains("首次") && (publishing.contains("手工") || publishing.contains("手动")),
         "须写明新 crate 名首次须手工发布（FR53）"
     );
+
+    let workflow = read_required(".github/workflows/ci.yml");
+    assert!(
+        workflow.contains("ci-test.sh") && workflow.contains("ubuntu"),
+        "GitHub Actions 须在 ubuntu 上调用 ci-test.sh"
+    );
 }
