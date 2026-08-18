@@ -29,7 +29,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 generated: 08-18-2026 10:24
-last_updated: 08-18-2026 16:40
+last_updated: 08-18-2026 16:50
 project: plugin-system
 project_key: NOKEY
 tracking_system: file-system
@@ -62,5 +62,5 @@ action_items:
     action: "在 crates.io 为 plugctx 与 plugctx-derive 配置 Trusted Publisher（仓库 TangCan/plugin-system，workflow
       文件名精确为 release.yml）后再用 v* tag 发下一版"
     owner: "Richard"
-    status: in-progress
+    status: done
     ref: "/home/richard/richard/2026/2026/plugin-system/_agile-output/implementation-artifacts/epic-1-retro-2026-08-18-publish-quality.md"
