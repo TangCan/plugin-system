@@ -70,6 +70,10 @@ cargo test -p plugctx --test acceptance_story_9_3
 # Trusted Publishing 工作流（Story 1.1 / FR1）
 cargo test -p plugctx --test acceptance_story_10_1
 
+# cargo-hack 互斥 feature（Story 1.2 / FR3）
+cargo test -p plugctx --test acceptance_story_10_2
+./scripts/ci-cargo-hack.sh
+
 # 0.y 版本策略与 CHANGELOG 对齐（Story 9.4 / FR54）
 cargo test -p plugctx --test acceptance_story_9_4
 # 或直接：
@@ -169,7 +173,7 @@ just test
 ./scripts/ci-test.sh
 ```
 
-> 注意：勿用盲目 `--all-features` 替代显式矩阵——`thread-safe` 会与部分默认同步验收（`#![cfg(not(feature = "thread-safe"))]`）互斥；显式按 feature 跑更清晰。
+> 注意：勿用盲目 `--all-features` 替代显式矩阵——`thread-safe` 会与部分默认同步验收（`#![cfg(not(feature = "thread-safe"))]`）互斥；显式按 feature 跑更清晰。CI 另用 `./scripts/ci-cargo-hack.sh`：`cargo hack check -p plugctx --feature-powerset --depth 1 --mutually-exclusive-features thread-safe,default --exclude-all-features`（排除 native/wasm；本地需 `cargo install cargo-hack`）。hack 用 `check` 而非全量 `test`，以免 `async` 下 trybuild `start_async_requires_feature` 从 compile_fail 变成通过。
 
 护栏：`acceptance_story_5_8`。
 

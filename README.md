@@ -133,6 +133,7 @@ cd plugin-system
 just test
 ./scripts/ci-test.sh              # 不先 fmt 写回，仅检查 + 测试
 ./scripts/ci-extension-matrix.sh   # 仅 FR41 扩展矩阵
+./scripts/ci-cargo-hack.sh         # FR3：cargo-hack check；thread-safe 与 default 互斥，排除 --all-features
 
 cargo test -p plugctx
 cargo test -p plugctx --test acceptance_story_5_5   # proptest 属性测试（Story 5.5）
