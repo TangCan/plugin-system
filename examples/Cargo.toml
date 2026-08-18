@@ -12,6 +12,11 @@ default = []
 # 重能力：按需开启，避免默认检查拉 Extism/wasmtime
 wasm = ["plugctx/dynamic-wasm"]
 component = ["plugctx/dynamic-wasm-component"]
+native = ["plugctx/dynamic-native"]
+web = ["dep:tiny_http"]
+
+[dependencies]
+tiny_http = { version = "0.12", optional = true }
 
 [dev-dependencies]
 plugctx = { workspace = true }
@@ -30,3 +35,17 @@ required-features = ["component"]
 name = "wasm-echo"
 path = "wasm-echo.rs"
 required-features = ["wasm"]
+
+[[example]]
+name = "cli-hotplug"
+path = "cli-hotplug.rs"
+required-features = ["native"]
+
+[[example]]
+name = "web-service"
+path = "web-service.rs"
+required-features = ["web"]
+
+[[example]]
+name = "game-loop"
+path = "game-loop.rs"

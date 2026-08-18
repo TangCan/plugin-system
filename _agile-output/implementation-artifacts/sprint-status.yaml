@@ -29,7 +29,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 generated: 08-18-2026 10:24
-last_updated: 08-18-2026 11:00
+last_updated: 08-18-2026 11:05
 project: plugin-system
 project_key: NOKEY
 tracking_system: file-system
@@ -47,9 +47,9 @@ development_status:
   2-2-github-actions-与-clippy-门禁: done
   epic-2-retrospective: optional
 
-  epic-3: backlog
-  3-1-cli-场景示例-含-native-热插拔: backlog
-  3-2-web-场景示例-tiny_http: backlog
-  3-3-游戏-tick-循环场景示例: backlog
-  3-4-独立用户指南: backlog
+  epic-3: done
+  3-1-cli-场景示例-含-native-热插拔: done
+  3-2-web-场景示例-tiny_http: done
+  3-3-游戏-tick-循环场景示例: done
+  3-4-独立用户指南: done
   epic-3-retrospective: optional

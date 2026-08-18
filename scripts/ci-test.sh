@@ -33,6 +33,8 @@ cargo check -p plugctx --examples --features async,stages
 cargo check -p plugctx-examples --examples
 cargo check -p plugctx-examples --examples --features component
 cargo check -p plugctx-examples --examples --features wasm
+cargo check -p plugctx-examples --examples --features native
+cargo check -p plugctx-examples --examples --features web
 
 echo "==> FR41 extension feature matrix (async/parallel/thread-safe/dynamic)"
 bash "$ROOT/scripts/ci-extension-matrix.sh"

@@ -11,6 +11,9 @@
 | derive | `cargo run -p plugctx-examples --example derive-plugin` |
 | Component / WIT | `cargo run -p plugctx-examples --example component-add --features component` |
 | Extism echo | `cargo run -p plugctx-examples --example wasm-echo --features wasm` |
+| CLI 热插拔 | `cargo build -p hello_plugin && cargo run -p plugctx-examples --example cli-hotplug --features native` |
+| Web tiny_http | `cargo run -p plugctx-examples --example web-service --features web` |
+| 游戏 tick | `cargo run -p plugctx-examples --example game-loop` |
 
 默认同步内核演示仍在 **`crates/plugctx/examples/`**（`combo` / `async-start` / `stages-lifecycle`），见根 README「可运行示例」。
 

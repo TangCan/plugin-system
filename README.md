@@ -167,6 +167,9 @@ cargo check -p plugctx --examples --features async,stages
 | `derive-plugin` | `#[derive(Plugin)]` | `cargo run -p plugctx-examples --example derive-plugin` |
 | `component-add` | wasip2 WIT 组件 `add` | `cargo run -p plugctx-examples --example component-add --features component` |
 | `wasm-echo` | Extism echo.wasm | `cargo run -p plugctx-examples --example wasm-echo --features wasm` |
+| `cli-hotplug` | native 加载 / 调用 / 物理卸载 | `cargo build -p hello_plugin && cargo run -p plugctx-examples --example cli-hotplug --features native` |
+| `web-service` | tiny_http + plugctx | `cargo run -p plugctx-examples --example web-service --features web` |
+| `game-loop` | 无引擎 tick + 卸载后停手 | `cargo run -p plugctx-examples --example game-loop` |
 
 ```bash
 cargo check -p plugctx-examples --examples
@@ -252,6 +255,8 @@ cargo run -p plugin-host -- target/debug call echo echo ping
 | **Wasmtime 资源 pooling** | 运行时 `PoolingAllocationConfig` 等内存/表槽复用 | **本 crate 不封装**；Extism 底层或使用 Wasmtime，但不向宿主暴露该配置 |
 
 概念与 Feature 对照见 [`docs/feature-matrix.md`](docs/feature-matrix.md)。文档门禁：`cargo test -p plugctx --test acceptance_story_7_3`。
+
+上手指南（最小插件、native 热插拔、CLI/Web/游戏示例命令）：[`docs/guide.md`](docs/guide.md)。
 
 ## 写一个插件（C ABI 脚手架）
 

@@ -208,3 +208,29 @@ fn readme_links_testing_doc() {
         "README must link docs/testing.md for pyramid mapping"
     );
 }
+
+/// Story 3.4：独立用户指南存在且 README 链入。
+#[test]
+fn guide_exists_and_readme_links_it() {
+    let guide = read_utf8("docs/guide.md");
+    for needle in [
+        "load → use → dispose → load",
+        "cli-hotplug",
+        "web-service",
+        "game-loop",
+        "tiny_http",
+        "dlclose",
+        "close",
+    ] {
+        assert!(guide.contains(needle), "docs/guide.md 须包含「{needle}」");
+    }
+    let readme = read_utf8("README.md");
+    assert!(
+        readme.contains("docs/guide.md"),
+        "README must link docs/guide.md before the C ABI scaffold section"
+    );
+    assert!(
+        !read_utf8("crates/plugctx/Cargo.toml").contains("tiny_http"),
+        "tiny_http must not enter plugctx"
+    );
+}
