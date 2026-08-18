@@ -29,7 +29,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 generated: 08-18-2026 10:24
-last_updated: 08-18-2026 15:45
+last_updated: 08-18-2026 16:05
 project: plugin-system
 project_key: NOKEY
 tracking_system: file-system
@@ -43,9 +43,9 @@ development_status:
   1-4-docs-rs-metadata-守门: done
   epic-1-retrospective: optional
 
-  epic-2: in-progress
+  epic-2: done
   2-1-native-卸载限度写入用户指南: done
-  2-2-wit-版本钉死与双-wasm-路径: backlog
+  2-2-wit-版本钉死与双-wasm-路径: done
   epic-2-retrospective: optional
 
 # Action items committed during retrospectives (section created by the retrospective workflow)

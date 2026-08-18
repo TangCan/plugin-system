@@ -39,3 +39,16 @@ cargo test -p plugctx --features dynamic-wasm-component --test acceptance_story_
 ```
 
 版本矩阵：[`docs/component-model-versions.md`](../../docs/component-model-versions.md)。
+
+## 实际 pin（与宿主文档一致，FR5）
+
+| 项 | 钉死 |
+| --- | --- |
+| WIT | `plugctx:sample@0.1.0`（`wit/world.wit`） |
+| wit-bindgen | **0.60.x** |
+| 目标 | **`wasm32-wasip2`** |
+| 宿主 wasmtime | **47.x**（workspace，不在本 crate） |
+
+**不要提前改钉**已发布的 `wasi@0.3.0`：当前工具链仍是 wasip2 + wit-bindgen 0.60；跳标签会导致宿主实例化失败。本样例 WIT **没有** `wasi:*` import。
+
+`dynamic-wasm`（Extism）与 `dynamic-wasm-component`（本客人）是两条路径、两份制品，**不能互相加载**，禁止一份 `.wasm` 两吃。卸载是宿主 Drop Store / 实例 close，不是 native `dlclose`。

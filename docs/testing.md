@@ -83,6 +83,9 @@ cargo test -p plugctx --test acceptance_story_10_4
 # native 卸载限度（Story 2.1 / FR4）
 cargo test -p plugctx --test acceptance_story_11_1
 
+# WIT pin 与双 WASM 路径（Story 2.2 / FR5）
+cargo test -p plugctx --test acceptance_story_11_2
+
 # 0.y 版本策略与 CHANGELOG 对齐（Story 9.4 / FR54）
 cargo test -p plugctx --test acceptance_story_9_4
 # 或直接：

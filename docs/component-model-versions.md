@@ -29,6 +29,22 @@ Epic 8 Story 8.1。
 Story 8.1 骨架 fixture（`testdata/component_add.wat`）仍保留：无 WASI、无 WIT 源，用于最小宿主路径。
 FR50 验收走 **wasip2 WIT 样例**（`bundled_wit_sample_add_wasm` / `acceptance_story_8_4`）。
 
+## 实际 WIT pin（FR5）
+
+与 `guests/wit-sample/` 及检入 `wit_sample_add.wasm` **一致**的钉死值：
+
+| 项 | 实际 pin |
+| --- | --- |
+| WIT 包 | **`plugctx:sample@0.1.0`**（`guests/wit-sample/wit/world.wit`，`world sample` 导出 `add`） |
+| WASI 导入 | **无**。样例不 `use wasi:*`，也不钉已发布的 **`wasi@0.3.0`** |
+| 客人 `wit-bindgen` | **0.60.x**（`guests/wit-sample/Cargo.toml`） |
+| 目标 | **`wasm32-wasip2`** |
+| 宿主 wasmtime | **47.x** |
+
+WASI 0.3.0 规范已发布，但当前 wasmtime 47 / wit-bindgen 0.60 **尚未**把样例客人切到该发布标签。在这两条工具链刷新之前，**禁止**把 `guests/wit-sample` 提前改钉 `wasi@0.3.0`（改了会在实例化时报错）。需要 WASI 时继续跟 **wasip2 + 0.60** 走，不要跳标签。
+
+`dynamic-wasm`（Extism 字节 ABI）与 `dynamic-wasm-component`（本路径）继续 **分 feature、分制品**；**禁止**暗示一份 `.wasm` 两吃。WASM 卸载仍是实例 `close`/`free` 或 Drop Store，**不是** native `dlclose`。本切片**不做** Fidius 式签名包。
+
 **诚实说明**：本机已验证 `cargo build --target wasm32-wasip2 --release` 可生成组件；产物仅导出 `add`，宿主现有无 WASI 的 `Linker` 即可实例化。CI 默认加载检入 `.wasm`，避免把 wasip2 工具链设为硬依赖。
 
 ## 相对 Component Model 1.0 的适配预期
