@@ -4,6 +4,14 @@
 
 ## Unreleased
 
+无。下一 crates.io 版本须先 bump `workspace.package.version`，再在此记录变更。
+
+## crates.io 0.1.0 — 2026-08-18
+
+首次上架（锁步）：[`plugctx`](https://crates.io/crates/plugctx) / [`plugctx-derive`](https://crates.io/crates/plugctx-derive) **0.1.0**。同一版本不可再传；后续发版见 [`docs/publishing.md`](docs/publishing.md)。
+
+Cargo `version` 为 `0.1.0`，同时已交付下文 **[0.1.0] 核心** 与 **[0.2.0] 扩展**能力清单（FR54：清单标题 ≠ 强制把字符串改成 `0.2.0`）。
+
 - **breaking（仅 `dynamic-native`）**：native 插件 `PluginHandle::dispose` / Context dispose 后 Drop `libloading::Library`（`dlclose` / `FreeLibrary`）。热插拔 = load → dispose → load；**不**新增 `reload()`。默认同步内核与 WASM FR26（实例 `close`/`free`）不变；**不**因此把 workspace `version` 改成 `0.2.0`。
 - **包名**：`pluggable` / `pluggable-derive` → **`plugctx` / `plugctx-derive`**（crates.io 上 `pluggable` 已被无关方占用；见 `docs/publishing.md`）。
 - **示例**：扩展 `crates/plugctx/examples`（`async-start` / `stages-lifecycle`）；新增工作区包 `examples/`（`plugctx-examples`，`publish = false`：derive / wasm / component）。
@@ -13,7 +21,7 @@
 | 概念 | 含义 |
 |------|------|
 | **能力清单** | 下文 `[0.1.0]` / `[0.2.0]` 标题：路线图可验收的功能集合 |
-| **crates.io / Cargo `version`** | `workspace.package.version`（当前常为 `0.1.0`） |
+| **crates.io / Cargo `version`** | `workspace.package.version`；crates.io 当前为 **`0.1.0`**（2026-08-18 上架） |
 
 **规则：**
 

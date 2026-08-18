@@ -4,6 +4,17 @@
 
 Feature 全表见 [`feature-matrix.md`](feature-matrix.md)。发布见 [`publishing.md`](publishing.md)。
 
+## 安装
+
+crates.io 当前版本 **0.1.0**：[`plugctx`](https://crates.io/crates/plugctx) / [`plugctx-derive`](https://crates.io/crates/plugctx-derive)。
+
+```bash
+cargo add plugctx
+cargo add plugctx-derive   # 可选：#[derive(Plugin)]
+```
+
+本仓库内开发请用 workspace path，不必 `cargo add`。
+
 ## 最小同步插件
 
 ```rust

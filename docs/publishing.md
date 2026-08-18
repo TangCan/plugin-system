@@ -1,6 +1,6 @@
 # crates.io 发布元数据与边界（FR51）
 
-本文档列出 **`plugctx` / `plugctx-derive`** 上架前的必填（或推荐）清单，以及工作区内 **不可发布** 成员边界。
+**现状（2026-08-18）：** [`plugctx`](https://crates.io/crates/plugctx) 与 [`plugctx-derive`](https://crates.io/crates/plugctx-derive) **0.1.0 已上架**。本文档列出必填（或推荐）元数据、工作区内 **不可发布** 成员，以及**后续版本**的发版顺序。
 
 ## 公开 crate 必填 / 等价项
 
@@ -39,20 +39,22 @@ cargo publish --workspace --dry-run
 cargo publish -p plugctx --dry-run
 ```
 
-> **注意：** 在 `plugctx` **尚未**出现在 crates.io 之前，单独 `cargo publish -p plugctx-derive --dry-run` 会因剥离 `path` 后无法解析 `plugctx` 而失败——属预期。应用 `--workspace` dry-run，或实际上架时**先发 `plugctx` 再发 `plugctx-derive`**。
+> **注意：** `plugctx` 已上架后，单独 `cargo publish -p plugctx-derive --dry-run` 可从 crates.io 解析 `plugctx`。**后续发版仍须先发 `plugctx` 再发 `plugctx-derive`**（derive 依赖同版本已上架的 `plugctx`）。若只 bump 了 workspace 版本却先发 derive，registry 上尚无新 `plugctx` 时 dry-run / publish 会失败。首次占名阶段曾因 `plugctx` 不存在而无法单独 dry-run derive——属当时预期。
 
 默认 features 下 `plugctx` **不**依赖未上架的 workspace 成员（`dynamic-native` 使用包内 `c_abi`，不再 path-依赖 `plugin-api`）。
 
-> 包名曾为 `pluggable`，因 crates.io 上已有无关方占用而改为 **`plugctx`**（见下文 FR54）。发布前仍应复验 `plugctx` / `plugctx-derive` 是否仍空闲。
+> 包名曾为 `pluggable`，因 crates.io 上已有无关方占用而改为 **`plugctx`**（见下文 FR54）。本库 **不是** crates.io 上的他方 `pluggable`。
 
-## 首次上架清单
+## 上架记录与后续发版清单
 
-无 registry token 时，本清单 + dry-run 绿即为「可上架」完成标准；实际上传由维护者执行。
+**已完成（2026-08-18）：** 维护者手工 `cargo publish -p plugctx`，再 `cargo publish -p plugctx-derive`，均为 **0.1.0**。crates.io 同一 crate 版本不可重复上传；`yank` ≠ 删除。
 
-1. 复验 crates.io：`GET https://crates.io/api/v1/crates/plugctx` 与 `plugctx-derive` 仍空闲（404 ≠ 预订）。
+后续版本：
+
+1. bump `workspace.package.version`（`plugctx` 与 `plugctx-derive` **锁步**）。
 2. `./scripts/ci-publish-dry-run.sh` 非零失败必须阻断。
 3. 干净工作树上去掉 `--allow-dirty` 再跑一次 dry-run。
-4. **先发 `plugctx`，再发 `plugctx-derive`**（derive 依赖已上架的 `plugctx` 版本）。
+4. **先发 `plugctx`，再发 `plugctx-derive`**（derive 依赖已上架的同版本 `plugctx`）。
 5. 不要把 `plugin-api`、host、示例、WIT guest 标成可发布（保持 `publish = false`）。
 
 ## 空 default 与 docs.rs 构建子集（FR52 / NFR14）
@@ -112,8 +114,9 @@ CI / 脏工作树使用 `--allow-dirty`；**真正 upload 前**须在干净树�
 
 对**从未上架过的 crate 名**，crates.io 要求至少一次**手工** `cargo publish`（或等价人工确认）建立所有权；**不可**仅靠 trusted publishing / 纯 CI 完成首次创建（FR53）。
 
-本工作区公开包：`plugctx`、`plugctx-derive`。
-> 诚实现状：曾用名 `pluggable` 在 crates.io 上已被无关方占用；现名 `plugctx` 经 2026-08-17 探测为空闲，但**首次 publish 前仍须复验**，404 不等于预订。
+本工作区公开包 `plugctx`、`plugctx-derive` 的**首次手工发布已完成**（2026-08-18，`0.1.0`）。后续版本可用 token 或 trusted publishing。若将来另起新 crate 名，仍须对该名再做一次手工首次 publish。
+
+> 诚实现状：曾用名 `pluggable` 在 crates.io 上已被无关方占用；现名 `plugctx` / `plugctx-derive` 已采用并上架 `0.1.0`。2026-08-17 API 探测曾为 404（404 ≠ 预订）；占名窗口已关闭。
 
 ### 速率限制与永久发布（NFR13）
 
@@ -125,7 +128,7 @@ CI / 脏工作树使用 `--allow-dirty`；**真正 upload 前**须在干净树�
 推荐 [release-plz](https://release-plz.dev/docs/github/quickstart)（GitHub Action + PR 发版），亦可用 `cargo-release` 等等价工具。最小流程：
 
 1. **本地/CI**：`./scripts/ci-publish-dry-run.sh` 绿。
-2. **首次每个新名**：维护者本机 `cargo login` 后手工 `cargo publish -p <crate>`（见上节）。
+2. **首次每个新名**：维护者本机 `cargo login` 后手工 `cargo publish -p <crate>`（`plugctx` / `plugctx-derive` 已做过；见上节）。
 3. **后续版本**：配置 `CARGO_REGISTRY_TOKEN` 或 trusted publishing；用 release-plz `release-pr` → 合并 → `release`（示例注释见 `.github/workflows/ci.yml`）。
 4. **文档**：发版 PR 同步 `CHANGELOG.md` 与工作区 `version`（能力清单 vs SemVer 见下文 FR54）。
 
@@ -153,13 +156,13 @@ CI / 脏工作树使用 `--allow-dirty`；**真正 upload 前**须在干净树�
 | 名称 | 状态（决策依据） |
 |------|------------------|
 | `pluggable` | crates.io **已占用**（无关方 `0.1.0` async plugin system）——**不可**作为本库上架名 |
-| `plugctx` / `plugctx-derive` | **已采用**（2026-08-17 API 探测均为 404；研究卷宗 `technical-pluggable-crate-rename-2026-08-17`） |
+| `plugctx` / `plugctx-derive` | **已采用并上架 0.1.0**（2026-08-18）。更早 2026-08-17 API 探测为 404（研究卷宗 `technical-pluggable-crate-rename-2026-08-17`）；该空闲探测已过期。 |
 
-**上架前仍须：**
+**后续发版：**
 
-1. **复验空闲**：`GET https://crates.io/api/v1/crates/plugctx`（及 `plugctx-derive`）仍为 404，或 `cargo publish --dry-run` 无「already exists」冲突。
-2. **尽快首次手工 publish** 占名（404 ≠ 预订；存在被抢注风险）。
-3. 若发布前发现 `plugctx` 已被抢：再走改名流程（另选未占用名，更新 `[package].name` 与文档）。
-4. README / docs 可一句区分：本库 **不是** crates.io 上的历史包名 `pluggable`（他方）。
+1. **复验当前版本**：`GET https://crates.io/api/v1/crates/plugctx` 应返回已发布 crate；新版本须 bump `workspace.package.version` 后再 `cargo publish`（`0.1.0` 已存在，不可重传）。
+2. 锁步：同一次发版两 crate 使用同一版本号；**先发 `plugctx` 再发 `plugctx-derive`**。
+3. 若将来不得不改名：另选未占用名，更新 `[package].name` 与文档（新名仍须首次手工 publish）。
+4. README / docs 须一句区分：本库 **不是** crates.io 上的历史包名 `pluggable`（他方）。
 
 验收：`cargo test -p plugctx --test acceptance_story_9_4`。

@@ -2,13 +2,15 @@
 title: plugctx 落地补齐（发布、文档、示例、native 热插拔）
 created: 2026-08-18
 updated: 2026-08-18
-status: draft
+status: complete
 scope: remaining-gaps-2026-08
 ---
 
 # PRD: plugctx 落地补齐
 
 *工作标题：把已实现内核送出仓库门，并兑现引言中的 native 热插拔。*
+
+**结项（2026-08-18）：** FR-1…FR-11 已交付；`plugctx` / `plugctx-derive` **0.1.0** 已上架 crates.io。后续为维护（trusted publishing、Windows CI、`authors` 等不在本切片）。
 
 ## 0. Document Purpose
 

@@ -5,7 +5,7 @@ purpose: build-substrate
 altitude: feature
 paradigm: 'layered plugin runtime + optional dynamic adapters'
 scope: '发布元数据、托管 CI、用户指南、CLI/Web/游戏示例、dynamic-native 物理卸载（废止 FR25）'
-status: draft
+status: complete
 created: '2026-08-18'
 updated: '2026-08-18'
 binds: ['FR-1', 'FR-2', 'FR-3', 'FR-4', 'FR-5', 'FR-6', 'FR-7', 'FR-8', 'FR-9', 'FR-10', 'FR-11']
